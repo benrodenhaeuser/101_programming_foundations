@@ -1,0 +1,35 @@
+/* config data for mortgage payment calculator */
+
+{
+  "bilingual":
+  {
+    "language?": "Welcome/Wilkommen! Please select your language/Bitte wählen Sie Ihre Sprache. (de/en)",
+    "invalid_language": "Please enter 'de' or 'en'/Bitte geben Sie 'de' oder 'en' ein."
+  },
+  "en":
+  {
+    "principal?": "What is the principal in dollars?",
+    "invalid_principal": "That is not a valid principal.",
+    "interest_rate?": "What is the annual interest rate in percent?",
+    "invalid_interest_rate": "Please enter a non-zero interest rate in percent.",
+    "term?": "What is the duration of the loan in years?",
+    "invalid_term": "Please enter a non-zero duration in years.",
+    "monthly_payment": "The monthly payment is",
+    "currency": "USD.",
+    "again?": "Do you want to make another calculation? (Y to continue)",
+    "bye": "Good-bye!"
+  },
+  "de":
+  {
+    "principal?": "Was ist die Höhe Ihres gewünschten Kredites?",
+    "invalid_principal": "Das ist keine gültige Eingabe.",
+    "interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
+    "invalid_interest_rate": "Bitte geben Sie einen gültigen Jahreszins ein.",
+    "term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",
+    "invalid_term": "Bitte geben Sie eine gültige Laufzeit ein.",
+    "monthly_payment": "Die monatliche Ratenzahlung beträgt",
+    "currency": "EUR.",
+    "again?": "Wollen Sie eine weitere Berechnung durchführen? (Y um weiterzumachen)",
+    "bye": "Auf Wiedersehen!"
+  }
+}

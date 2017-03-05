@@ -3,7 +3,7 @@
 
 # create output for user
 require 'json'
-json_file = File.read('./user_messages.json')
+json_file = File.read('./calculator_config.json')
 MSGS = JSON.parse(json_file)
 
 def prompt(message)
