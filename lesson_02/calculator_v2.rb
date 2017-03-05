@@ -1,4 +1,5 @@
-# calculator with localization
+# calculator with language (German or English) set by the user
+# data for language-specific user messages in file "./user_messages.json"
 
 # create output for user
 require 'json'
@@ -59,8 +60,8 @@ end
 prompt(message('welcome'))
 loop do
   input = gets.chomp
-  if valid_language?(input)
-    LANGUAGE = input
+  if valid_language?(input.downcase)
+    LANGUAGE = input.downcase
     break
   else
     prompt(message('invalid_language_warning'))
@@ -105,7 +106,7 @@ loop do
   end
 
   prompt(
-    to_message(operation) <<
+    to_message(operation, number1, number2) <<
     message('the_two_numbers') <<
     "#{number1}#{message('and')}#{number2}"
   )
