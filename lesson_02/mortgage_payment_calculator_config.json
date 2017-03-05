@@ -9,7 +9,7 @@
   "en":
   {
     "principal?": "What is the principal in dollars?",
-    "invalid_principal": "That is not a valid principal.",
+    "invalid_principal": "Please enter a non-negative number rounded to dollars.",
     "interest_rate?": "What is the annual interest rate in percent?",
     "invalid_interest_rate": "Please enter a non-zero interest rate in percent.",
     "term?": "What is the duration of the loan in years?",
@@ -21,8 +21,8 @@
   },
   "de":
   {
-    "principal?": "Was ist die Höhe Ihres gewünschten Kredites?",
-    "invalid_principal": "Das ist keine gültige Eingabe.",
+    "principal?": "Was ist die Höhe Ihres gewünschten Kredites in Euro?",
+    "invalid_principal": "Bitte geben Sie eine positive Zahl ein.",
     "interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
     "invalid_interest_rate": "Bitte geben Sie einen gültigen Jahreszins ein.",
     "term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",

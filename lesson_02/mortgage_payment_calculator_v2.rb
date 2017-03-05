@@ -3,7 +3,7 @@
 # prompts
 require 'json'
 config_data = File.read("./mortgage_payment_calculator_config.json")
-MESSAGES = JSON.load(config_data)
+MESSAGES = JSON.parse(config_data)
 
 def prompt(message)
   puts "=> #{message}"
@@ -22,17 +22,17 @@ def valid_language?(language)
   %w(de en).include?(language)
 end
 
-def valid_int?(number)
-  number.to_i.to_s == number
+def valid_pos_int?(number)
+  number.to_i.to_s == number && number.to_i > 0
+end
+
+def valid_non_neg_int?(number)
+  number.to_i.to_s == number && number.to_i >= 0
 end
 
 def valid_rate?(number)
   (number.to_i.to_s == number || number.to_f.to_s == number) &&
-    number.to_f != 0.0
-end
-
-def valid_term?(number)
-  valid_int?(number) && number.to_i != 0
+    number.to_f > 0.0
 end
 
 # calculation engine
@@ -62,7 +62,7 @@ loop do
   loop do
     prompt(message("principal?"))
     principal = gets.chomp
-    break if valid_int?(principal)
+    break if valid_non_neg_int?(principal)
     prompt(message("invalid_principal"))
   end
 
@@ -78,7 +78,7 @@ loop do
   loop do
     prompt(message("term?"))
     term_in_years = gets.chomp
-    break if valid_term?(term_in_years)
+    break if valid_pos_int?(term_in_years)
     prompt(message("invalid_term"))
   end
 
