@@ -1,0 +1,40 @@
+### write pseudo-code for a method that returns the sum of two integers
+
+START
+
+# Given two integers called numbers
+
+result = the first number + the second number
+return result
+
+END
+
+### write pseudo-code for a method that takes an array of strings, and returns a string that is all those strings concatenated together
+
+START
+
+# Given an array of strings called "strings"
+
+SET iterator = 0
+SET result to the empty string
+WHILE iterator < length of array of strings
+  concatenate result with the value in strings at index "iterator"
+RETURN result
+
+END
+
+
+### write pseudo-code for a method that takes an array of integers, and returns a new array with every other element
+
+START
+
+# Given an array of integers called input_array
+
+SET new_array = [ ]
+SET iterator = 0
+WHILE iterator < length of input_array
+  if iterator is even
+    push input_array[iterator] to new_array
+  iterator += 1
+
+END

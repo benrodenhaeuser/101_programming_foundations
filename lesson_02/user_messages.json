@@ -1,0 +1,42 @@
+{
+  "bilingual": {
+    "welcome": "Willkommen/Welcome! Bitte wähle deine Sprache/Please choose your language.",
+    "invalid_language_warning": "Die Optionen sind/The options are: de, en."
+  },
+  "de": {
+    "hi": "Hallo, ",
+    "goodbye": "Das hat Spass gemacht. Tschüss!",
+    "please_enter_name": "Bitte gib deinen Namen ein.",
+    "please_enter_number": "Bitte gib eine Zahl ein.",
+    "please_enter_operation": "Bitte gib die Operation an, die du ausführen willst (add, subtract, multiply, divide)",
+    "invalid_name_warning": "Das ist doch kein Name!",
+    "invalid_name_warning": "Das ist keine gültige Zahleneingabe.",
+    "invalid_operation_warning": "Diese Operation ist nicht bekannt.",
+    "the_result_is": "Das Ergebnis ist ",
+    "repeat?": "Willst du noch etwas anderes ausrechnen? (Y um weiterzumachen)",
+    "the_two_numbers": " die beiden Zahlen ",
+    "and": " und ",
+    "adding": "Addiere",
+    "subtracting": "Subtrahiere",
+    "multiplying": "Multipliziere",
+    "dividing": "Dividiere"
+  },
+  "en": {
+    "hi": "Hi, ",
+    "goodbye": "We enjoyed calculating for you. Good-bye!",
+    "please_enter_name": "Please enter your name",
+    "please_enter_number": "Please enter a number",
+    "please_enter_operation": "Please enter the operation you would like to perform (add, subtract, multiply, divide)",
+    "invalid_name_warning": "Make sure to enter a valid name.",
+    "invalid_name_warning": "Hmmm ... this is not a valid number. Go again.",
+    "invalid_operation_warning": "Hmmm ... this is not a valid operation. Go again.",
+    "the_result_is": "The result is ",
+    "repeat?": "Do you want to perform another calulation? (Y to calculate again)",
+    "the_two_numbers": " the two numbers ",
+    "and": " and ",
+    "adding": "Adding",
+    "subtracting": "Subtracting",
+    "multiplying": "Multiplying",
+    "dividing": "Dividing"
+  }
+}
