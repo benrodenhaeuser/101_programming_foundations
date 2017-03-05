@@ -1,6 +1,6 @@
 # calculator with localization
 
-# create outputs to user
+# create output for user
 require 'json'
 json_file = File.read('./user_messages.json')
 MSGS = JSON.parse(json_file)
@@ -27,17 +27,13 @@ def to_message(operation)
   result
 end
 
-# validate inputs from user
+# validate input from user
 def valid_language?(language)
-  result = false
-  result = true if %w(de en).include?(language)
-  result
+  %w(de en).include?(language)
 end
 
 def valid_name?(name)
-  result = true
-  result = false if name.empty?
-  result
+  !name.empty?
 end
 
 def valid_number?(number)
@@ -45,24 +41,21 @@ def valid_number?(number)
 end
 
 def valid_operation?(operation)
-  result = false
-  result = true if %w(add subtract multiply divide).include?(operation)
-  result
+  %w(add subtract multiply divide).include?(operation)
 end
 
-# calculate results
+# calculation engine
 def calculate(number1, number2, operation)
-  result = nil
-  case operation
-  when 'add'      then result = number1 + number2
-  when 'subtract' then result = number1 - number2
-  when 'multiply' then result = number1 * number2
-  when 'divide'   then result = number1.to_f / number2.to_f
-  end
+  result = case operation
+           when 'add'      then number1 + number2
+           when 'subtract' then number1 - number2
+           when 'multiply' then number1 * number2
+           when 'divide'   then number1.to_f / number2.to_f
+           end
   result
 end
 
-# main
+# main: language and user name
 prompt(message('welcome'))
 loop do
   input = gets.chomp
@@ -78,15 +71,13 @@ name = ''
 prompt(message('please_enter_name'))
 loop do
   name = gets.chomp
-  if valid_name?(name)
-    break
-  else
-    prompt(message('invalid_name_warning'))
-  end
+  break if valid_name?(name)
+  prompt(message('invalid_name_warning'))
 end
 
 prompt(message('hi') + name)
 
+# main: calculations
 loop do
   number1 = nil
   loop do
@@ -118,10 +109,12 @@ loop do
     message('the_two_numbers') <<
     "#{number1}#{message('and')}#{number2}"
   )
+
   prompt(
     message('the_result_is') <<
     calculate(number1.to_i, number2.to_i, operation).to_s
   )
+
   prompt(message('repeat?'))
   answer = gets.chomp
   break unless answer.downcase.start_with?('y')
