@@ -49,8 +49,8 @@ end
 prompt(message("language?"))
 loop do
   lang = gets.chomp
-  if valid_language?(lang.downcase)
-    LANGUAGE = lang.downcase
+  if valid_language?(lang.downcase!)
+    LANGUAGE = lang
     break
   else
     prompt(message('invalid_language'))

@@ -6,6 +6,7 @@
     "language?": "Welcome/Wilkommen! Please select your language/Bitte wählen Sie Ihre Sprache. (de/en)",
     "invalid_language": "Please enter 'de' or 'en'/Bitte geben Sie 'de' oder 'en' ein."
   },
+
   "en":
   {
     "principal?": "What is the principal in dollars?",
@@ -19,6 +20,7 @@
     "again?": "Do you want to make another calculation? (Y to continue)",
     "bye": "Good-bye!"
   },
+  
   "de":
   {
     "principal?": "Was ist die Höhe Ihres gewünschten Kredites in Euro?",
