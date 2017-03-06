@@ -5,7 +5,7 @@
   {
     "welcome": "Welcome!",
     "language?": "Enter 'en' to continue in English.",
-    "principal?": "What is the principal in dollars?",
+    "principal?": "What is the amount of the loan rounded to dollars?",
     "interest_rate?": "What is the annual interest rate in percent?",
     "term?": "What is the duration of the loan in years?",
     "invalid_principal": "Please enter a non-negative number rounded to dollars.",

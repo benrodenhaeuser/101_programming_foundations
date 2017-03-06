@@ -5,15 +5,14 @@ require 'json'
 config_data = File.read("./mortgage_payment_calculator_config.json")
 LANGUAGES = JSON.parse(config_data)
 
-def prompt(message_key, subst = {}) # TODO
+def prompt(message_key, subst = {})
   if !defined?(LANGUAGE)
     message = ""
     LANGUAGES.each do |_, language|
       message << language[message_key] + " "
     end
   else
-    message = LANGUAGES[LANGUAGE][message_key]
-    message = message % subst
+    message = LANGUAGES[LANGUAGE][message_key] % subst
   end
   puts "=> #{message}"
 end
