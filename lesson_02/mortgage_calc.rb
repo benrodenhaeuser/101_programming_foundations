@@ -1,4 +1,4 @@
-# multilingual mortgage_payment_calculator_v_2.rb
+# multilingual mortgage payment calculator
 
 # user prompts
 require 'json'
