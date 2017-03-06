@@ -1,23 +1,26 @@
-# mortgage_payment_calculatorv_2.rb
+# multilingual mortgage_payment_calculator_v_2.rb
 
-# prompts
+# user prompts
 require 'json'
 config_data = File.read("./mortgage_payment_calculator_config.json")
-MESSAGES = JSON.parse(config_data)
+LANGUAGES = JSON.parse(config_data)
 
-def prompt(message_key, subst = {})
-  message = if !defined?(LANGUAGE)
-              MESSAGES['bilingual'][message_key]
-            else
-              MESSAGES[LANGUAGE][message_key]
-            end
-  message = message % subst
+def prompt(message_key, subst = {}) # TODO
+  if !defined?(LANGUAGE)
+    message = ""
+    LANGUAGES.each do |_, language|
+      message << language[message_key] + " "
+    end
+  else
+    message = LANGUAGES[LANGUAGE][message_key]
+    message = message % subst
+  end
   puts "=> #{message}"
 end
 
-# validation
+# input validation
 def valid_language?(language)
-  %w(de en).include?(language)
+  LANGUAGES.keys.include?(language)
 end
 
 def valid_int?(number)
@@ -52,14 +55,12 @@ end
 
 # user interaction
 prompt("welcome")
-prompt("language?")
 loop do
+  prompt("language?")
   lang = gets.chomp
   if valid_language?(lang.downcase)
     LANGUAGE = lang.downcase
     break
-  else
-    prompt('invalid_language')
   end
 end
 
@@ -99,13 +100,11 @@ loop do
     term_in_years.to_i
   )
 
-  prompt('monthly_payment', { monthly_payment: monthly_payment })
+  prompt('your_monthly_payment', { monthly_payment: monthly_payment })
 
   prompt("again?")
   answer = gets.chomp
-  break unless
-    LANGUAGE == 'de' && answer.downcase.start_with?("j") ||
-    LANGUAGE == 'en' && answer.downcase.start_with?("y")
+  break unless answer.downcase.start_with?(LANGUAGES[LANGUAGE]['yes'])
 end
 
 prompt("bye")

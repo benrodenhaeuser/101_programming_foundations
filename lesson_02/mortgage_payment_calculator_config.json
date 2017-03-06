@@ -1,44 +1,64 @@
 /* config data for mortgage payment calculator */
 
 {
-  "bilingual":
-  {
-    "welcome": "Welcome/Wilkommen!",
-    "language?": "Please select your language/Bitte wählen Sie Ihre Sprache. (de/en)",
-    "invalid_language": "Please enter 'de' or 'en'/Bitte geben Sie 'de' oder 'en' ein."
-  },
-
   "en":
   {
+    "welcome": "Welcome!",
+    "language?": "Enter 'en' to continue in English.",
     "principal?": "What is the principal in dollars?",
     "interest_rate?": "What is the annual interest rate in percent?",
     "term?": "What is the duration of the loan in years?",
     "invalid_principal": "Please enter a non-negative number rounded to dollars.",
     "invalid_interest_rate": "Please enter a non-zero interest rate in percent.",
     "invalid_term": "Please enter a non-zero duration in years.",
-    "monthly_payment": "Your monthly payment is %{monthly_payment} USD.",
+    "your_monthly_payment": "Your monthly payment is %{monthly_payment} USD.",
     "calculating_based_on": "Calculating monthly loan payment based on the following information:",
     "principal": "Principal: %{principal} USD",
     "rate": "Annual interest rate: %{rate}%",
     "term": "Loan duration in years: %{term}",
     "again?": "Do you want to make another calculation? (Y to continue)",
+    "yes": "y",
     "bye": "Good-bye!"
   },
 
   "de":
   {
+    "welcome": "Willkommen!",
+    "language?": "Geben Sie 'de' ein, um auf Deutsch fortzufahren.",
     "principal?": "Was ist die Höhe Ihres gewünschten Kredites in Euro?",
-"interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
-"term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",
+    "interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
+    "term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",
     "invalid_principal": "Bitte geben Sie eine positive Zahl ein.",
     "invalid_interest_rate": "Bitte geben Sie einen gültigen Jahreszins ein.",
     "invalid_term": "Bitte geben Sie eine gültige Laufzeit ein.",
-    "monthly_payment": "Ihre monatliche Ratenzahlung beträgt %{monthly_payment} EUR.",
+    "your_monthly_payment": "Ihre monatliche Ratenzahlung beträgt %{monthly_payment} EUR.",
     "calculating_based_on": "Wir berechnen für Sie die monatliche Zahlung auf Grundlage folgender Angaben:",
     "principal": "Kreditsumme: %{principal} EUR",
     "rate": "Jährliche Kreditrate: %{rate}%",
     "term": "Kreditdauer in Jahren: %{term}",
     "again?": "Wollen Sie eine weitere Berechnung durchführen? (J um weiterzumachen)",
+    "yes": "j",
     "bye": "Auf Wiedersehen!"
+  },
+
+  "kl":
+  {
+    "welcome": "Wiruminu!",
+    "language?": "Warge 'kl' da rum ri.",
+    "principal?": "Waga ri?",
+    "interest_rate?": "Wogo ro?",
+    "term?": "Wege re?",
+    "invalid_principal": "Wagawaga.",
+    "invalid_interest_rate": "Worimu.",
+    "invalid_term": "Brirumbi.",
+    "your_monthly_payment": "Worilu %{monthly_payment} KLING.",
+    "calculating_based_on": "Kurimu larima:",
+    "principal": "Kuru: %{principal} KLING",
+    "rate": "Aplimo: %{rate}%",
+    "term": "Wogoggo: %{term}",
+    "again?": "Wirum wurum? (K di rum)",
+    "yes": "k",
+    "bye": "Doro doro!"
   }
+
 }
