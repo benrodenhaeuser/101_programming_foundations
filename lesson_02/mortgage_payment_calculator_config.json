@@ -11,36 +11,34 @@
   "en":
   {
     "principal?": "What is the principal in dollars?",
-    "invalid_principal": "Please enter a non-negative number rounded to dollars.",
     "interest_rate?": "What is the annual interest rate in percent?",
-    "invalid_interest_rate": "Please enter a non-zero interest rate in percent.",
     "term?": "What is the duration of the loan in years?",
+    "invalid_principal": "Please enter a non-negative number rounded to dollars.",
+    "invalid_interest_rate": "Please enter a non-zero interest rate in percent.",
     "invalid_term": "Please enter a non-zero duration in years.",
     "monthly_payment": "Your monthly payment is %{monthly_payment} USD.",
-    "currency": "USD",
-    "again?": "Do you want to make another calculation? (Y to continue)",
-    "bye": "Good-bye!",
+    "calculating_based_on": "Calculating monthly loan payment based on the following information:",
     "principal": "Principal: %{principal} USD",
     "rate": "Annual interest rate: %{rate}%",
     "term": "Loan duration in years: %{term}",
-    "calculating_based_on": "Calculating monthly loan payment based on the following information:"
+    "again?": "Do you want to make another calculation? (Y to continue)",
+    "bye": "Good-bye!"
   },
 
   "de":
   {
     "principal?": "Was ist die Höhe Ihres gewünschten Kredites in Euro?",
+"interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
+"term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",
     "invalid_principal": "Bitte geben Sie eine positive Zahl ein.",
-    "interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
     "invalid_interest_rate": "Bitte geben Sie einen gültigen Jahreszins ein.",
-    "term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",
     "invalid_term": "Bitte geben Sie eine gültige Laufzeit ein.",
     "monthly_payment": "Ihre monatliche Ratenzahlung beträgt %{monthly_payment} EUR.",
-    "currency": "EUR",
-    "again?": "Wollen Sie eine weitere Berechnung durchführen? (Y um weiterzumachen)",
-    "bye": "Auf Wiedersehen!",
+    "calculating_based_on": "Wir berechnen für Sie die monatliche Zahlung auf Grundlage folgender Angaben:",
     "principal": "Kreditsumme: %{principal} EUR",
     "rate": "Jährliche Kreditrate: %{rate}%",
     "term": "Kreditdauer in Jahren: %{term}",
-    "calculating_based_on": "Wir berechnen für Sie die monatliche Zahlung auf Grundlage folgender Angaben:"
+    "again?": "Wollen Sie eine weitere Berechnung durchführen? (J um weiterzumachen)",
+    "bye": "Auf Wiedersehen!"
   }
 }

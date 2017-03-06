@@ -50,7 +50,7 @@ def calc_monthly_payment(principal, annual_interest_percent, term_in_years)
   monthly_payment.round(2)
 end
 
-# interaction
+# user interaction
 prompt("welcome")
 prompt("language?")
 loop do
@@ -103,7 +103,9 @@ loop do
 
   prompt("again?")
   answer = gets.chomp
-  break unless answer.downcase.start_with?("y")
+  break unless
+    LANGUAGE == 'de' && answer.downcase.start_with?("j") ||
+    LANGUAGE == 'en' && answer.downcase.start_with?("y")
 end
 
 prompt("bye")
