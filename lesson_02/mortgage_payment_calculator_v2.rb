@@ -1,20 +1,18 @@
-# mortgage_payment_calculator.rb
+# mortgage_payment_calculatorv_2.rb
 
 # prompts
 require 'json'
 config_data = File.read("./mortgage_payment_calculator_config.json")
 MESSAGES = JSON.parse(config_data)
 
-def prompt(message)
+def prompt(message_key, subst = {})
+  message = if !defined?(LANGUAGE)
+              MESSAGES['bilingual'][message_key]
+            else
+              MESSAGES[LANGUAGE][message_key]
+            end
+  message = message % subst
   puts "=> #{message}"
-end
-
-def message(message_key)
-  if !defined?(LANGUAGE)
-    MESSAGES['bilingual'][message_key]
-  else
-    MESSAGES[LANGUAGE][message_key]
-  end
 end
 
 # validation
@@ -22,17 +20,24 @@ def valid_language?(language)
   %w(de en).include?(language)
 end
 
-def valid_pos_int?(number)
-  number.to_i.to_s == number && number.to_i > 0
+def valid_int?(number)
+  number.to_i.to_s == number
 end
 
-def valid_non_neg_int?(number)
-  number.to_i.to_s == number && number.to_i >= 0
+def valid_float?(number)
+  valid_int?(number) || number.to_f.to_s == number
+end
+
+def valid_principal?(number)
+  valid_int?(number) && number.to_i >= 0
 end
 
 def valid_rate?(number)
-  (number.to_i.to_s == number || number.to_f.to_s == number) &&
-    number.to_f > 0.0
+  valid_float?(number) && number.to_f > 0
+end
+
+def valid_term?(number)
+  valid_int?(number) && number.to_i > 0
 end
 
 # calculation engine
@@ -45,42 +50,48 @@ def calc_monthly_payment(principal, annual_interest_percent, term_in_years)
   monthly_payment.round(2)
 end
 
-# main
-prompt(message("language?"))
+# interaction
+prompt("welcome")
+prompt("language?")
 loop do
   lang = gets.chomp
-  if valid_language?(lang.downcase!)
-    LANGUAGE = lang
+  if valid_language?(lang.downcase)
+    LANGUAGE = lang.downcase
     break
   else
-    prompt(message('invalid_language'))
+    prompt('invalid_language')
   end
 end
 
 loop do
   principal = nil
   loop do
-    prompt(message("principal?"))
+    prompt("principal?")
     principal = gets.chomp
-    break if valid_non_neg_int?(principal)
-    prompt(message("invalid_principal"))
+    break if valid_principal?(principal)
+    prompt("invalid_principal")
   end
 
   annual_interest_percent = nil
   loop do
-    prompt(message("interest_rate?"))
+    prompt("interest_rate?")
     annual_interest_percent = gets.chomp
     break if valid_rate?(annual_interest_percent)
-    prompt(message("invalid_interest_rate"))
+    prompt("invalid_interest_rate")
   end
 
   term_in_years = nil
   loop do
-    prompt(message("term?"))
+    prompt("term?")
     term_in_years = gets.chomp
-    break if valid_pos_int?(term_in_years)
-    prompt(message("invalid_term"))
+    break if valid_term?(term_in_years)
+    prompt("invalid_term")
   end
+
+  prompt('calculating_based_on')
+  prompt('principal', { principal: principal })
+  prompt('rate', { rate: annual_interest_percent })
+  prompt('term', { term: term_in_years })
 
   monthly_payment = calc_monthly_payment(
     principal.to_i,
@@ -88,15 +99,11 @@ loop do
     term_in_years.to_i
   )
 
-  prompt(
-    message("monthly_payment") +
-    " #{monthly_payment} " +
-    message("currency")
-  )
+  prompt('monthly_payment', { monthly_payment: monthly_payment })
 
-  prompt(message("again?"))
+  prompt("again?")
   answer = gets.chomp
   break unless answer.downcase.start_with?("y")
 end
 
-prompt(message("bye"))
+prompt("bye")

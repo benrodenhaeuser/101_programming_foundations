@@ -1,5 +1,5 @@
-# calculator with language (German or English) set by the user
-# data for language-specific user messages in file "./calculator_config.json"
+# calculator with language (German or English) chosen by the user
+# data for user messages in file "./calculator_config.json"
 
 # create output for user
 require 'json'
