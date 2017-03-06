@@ -29,8 +29,8 @@
     "interest_rate?": "Wie hoch ist der Jahreszins in Prozent?",
     "term?": "Was ist die gewünschte Laufzeit Ihres Kredits?",
     "invalid_principal": "Bitte geben Sie eine positive Zahl ein.",
-    "invalid_interest_rate": "Bitte geben Sie einen gültigen Jahreszins ein.",
-    "invalid_term": "Bitte geben Sie eine gültige Laufzeit ein.",
+    "invalid_interest_rate": "Bitte geben Sie einen gültigen Jahreszins ein (mehr als 0 Prozent).",
+    "invalid_term": "Bitte geben Sie eine gültige Laufzeit ein (mindestens ein Jahr).",
     "your_monthly_payment": "Ihre monatliche Ratenzahlung beträgt %{monthly_payment} EUR.",
     "calculating_based_on": "Wir berechnen für Sie die monatliche Zahlung auf Grundlage folgender Angaben:",
     "principal": "Kreditsumme: %{principal} EUR",
@@ -39,26 +39,5 @@
     "again?": "Wollen Sie eine weitere Berechnung durchführen? (J um weiterzumachen)",
     "yes": "j",
     "bye": "Auf Wiedersehen!"
-  },
-
-  "kl":
-  {
-    "welcome": "Wiruminu!",
-    "language?": "Warge 'kl' da rum ri.",
-    "principal?": "Waga ri?",
-    "interest_rate?": "Wogo ro?",
-    "term?": "Wege re?",
-    "invalid_principal": "Wagawaga.",
-    "invalid_interest_rate": "Worimu.",
-    "invalid_term": "Brirumbi.",
-    "your_monthly_payment": "Worilu %{monthly_payment} KLING.",
-    "calculating_based_on": "Kurimu larima:",
-    "principal": "Kuru: %{principal} KLING",
-    "rate": "Aplimo: %{rate}%",
-    "term": "Wogoggo: %{term}",
-    "again?": "Wirum wurum? (K di rum)",
-    "yes": "k",
-    "bye": "Doro doro!"
   }
-
 }

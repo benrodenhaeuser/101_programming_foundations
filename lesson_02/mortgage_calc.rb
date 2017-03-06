@@ -2,7 +2,7 @@
 
 # user prompts
 require 'json'
-config_data = File.read("./mortgage_payment_calculator_config.json")
+config_data = File.read("./mortgage_calc_config.json")
 LANGUAGES = JSON.parse(config_data)
 
 def prompt(message_key, subst = {})
