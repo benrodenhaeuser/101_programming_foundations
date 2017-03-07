@@ -2,17 +2,17 @@
 
 # user prompts
 require 'json'
-config_data = File.read("./mortgage_calc_config_ref.json")
+config_data = File.read('./mortgage_calc_config_ref.json')
 LANGUAGES = JSON.parse(config_data)
 
 def prompt(message_key, subst = {})
-  if !defined?(LANGUAGE)
-    message = ""
-    LANGUAGES.each do |_, language|
-      message << language[message_key] + " "
-    end
-  else
+  if defined?(LANGUAGE)
     message = LANGUAGES[LANGUAGE][message_key] % subst
+  else
+    message = ''
+    LANGUAGES.each do |_, language|
+      message << language[message_key] + ' '
+    end
   end
   puts "=> #{message}"
 end
@@ -49,13 +49,13 @@ def calc_monthly_payment(principal, annual_interest_percent, term_in_years)
   term_in_months = term_in_years * 12
   monthly_payment = principal * (monthly_interest_decimal /
                     (1 - (1 + monthly_interest_decimal)**-term_in_months))
-  monthly_payment.round(2) # TODO: use Kernel#format instead
+  format("%.2f", monthly_payment) # equivalently: "%.2f" % monthly_payment
 end
 
 # user interaction
-prompt("welcome")
+prompt('welcome')
 loop do
-  prompt("language?")
+  prompt('language?')
   lang = gets.chomp
   if valid_language?(lang.downcase)
     LANGUAGE = lang.downcase
@@ -66,26 +66,26 @@ end
 loop do
   principal = nil
   loop do
-    prompt("principal?")
+    prompt('principal?')
     principal = gets.chomp
     break if valid_principal?(principal)
-    prompt("invalid_principal")
+    prompt('invalid_principal')
   end
 
   annual_interest_percent = nil
   loop do
-    prompt("interest_rate?")
+    prompt('interest_rate?')
     annual_interest_percent = gets.chomp
     break if valid_rate?(annual_interest_percent)
-    prompt("invalid_interest_rate")
+    prompt('invalid_interest_rate')
   end
 
   term_in_years = nil
   loop do
-    prompt("term?")
+    prompt('term?')
     term_in_years = gets.chomp
     break if valid_term?(term_in_years)
-    prompt("invalid_term")
+    prompt('invalid_term')
   end
 
   prompt('calculating_based_on')
@@ -101,9 +101,9 @@ loop do
 
   prompt('your_monthly_payment_is', { monthly_payment: monthly_payment })
 
-  prompt("again?")
+  prompt('again?')
   answer = gets.chomp
   break unless answer.downcase.start_with?(LANGUAGES[LANGUAGE]['yes'])
 end
 
-prompt("bye")
+prompt('bye')
