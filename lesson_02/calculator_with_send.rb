@@ -1,8 +1,5 @@
-# Just playing around here to test the 'send' method.
-
-# The idea of this refactored program is to avoid the use of a conditional
-# With the send method, we can send methods to objects. In this case, we are
-# sending to the "global object" (I suppose?)
+# The idea of this calculator implementation is to avoid the use of a
+# conditional/case statement.
 
 def addition(number1, number2)
   number1 + number2
