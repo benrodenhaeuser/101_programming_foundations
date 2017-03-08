@@ -1,21 +1,23 @@
 require 'json'
 config = File.read('./rock_paper_scissors_config.json')
 MESSAGES = JSON.parse(config)
-VALID_CHOICES = ['rock', 'paper', 'scissors']
+VALID_CHOICES = %w(rock paper scissors)
 
 def prompt(message_key, subst = {})
   message = MESSAGES[message_key] % subst
   puts "=> #{message}"
 end
 
-def compute_result(player, computer)
-  if (player == 'rock'     && computer == 'scissors') ||
-     (player == 'paper'    && computer == 'rock') ||
-     (player == 'scissors' && computer == 'paper')
+def win?(player1, player2)
+  (player1 == 'rock' && player2 == 'scissors') ||
+    (player1 == 'paper' && player2 == 'rock') ||
+    (player1 == 'scissors' && player2 == 'paper')
+end
+
+def compute_result(human, computer)
+  if win?(human, computer)
     'you_won'
-  elsif (player == 'rock' && computer == 'paper') ||
-        (player == 'paper' && computer == 'scissors') ||
-        (player == 'scissors' && computer == 'rock')
+  elsif win?(computer, human)
     'you_lost'
   else
     'a_tie'
