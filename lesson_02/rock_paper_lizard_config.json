@@ -1,7 +1,7 @@
 /* config data for rock paper scissors */
 
 {
-  "welcome": "Welcome! The player who wins 5 rounds first wins the game.",
+  "welcome": "Welcome! A player who has won 5 times wins the game.",
   "choose!": "Make your choice among rock (r), paper (p), scissors (sc), lizard (l), spock (sp).",
   "invalid_input": "This is not a valid input.",
   "choices_made_were": "You chose %{your_choice}, computer chose %{comp_choice}.",
@@ -10,8 +10,8 @@
   "you_won_game": "You won the game.",
   "you_lost_game": "You lost the game.",
   "a_tie": "This round is a tie.",
-  "again?": "Do you want to play again? (C to continue, Q to quit)",
+  "again?": "I would like to play again. What do you think? (C to continue, Q to quit)",
   "current_score_is": "Your current score is %{your_score}, computer's is %{computer_score}.",
-  "how_to_exit": "You can exit at any time by entering Q.",
+  "how_to_exit": "You may exit at any time by entering Q.",
   "bye": "Sad to see you go."
 }

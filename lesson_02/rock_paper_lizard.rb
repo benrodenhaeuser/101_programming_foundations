@@ -36,17 +36,20 @@ def request_choice
   end
 end
 
-def display_choices(your_choice, comp_choice)
+def display_choices(choices)
   prompt(
     'choices_made_were',
-    { your_choice: your_choice, comp_choice: comp_choice }
+    {
+      your_choice: choices[:your_choice],
+      comp_choice: choices[:comp_choice]
+    }
   )
 end
 
-def evaluate_round(your_choice, comp_choice)
-  if WIN_PAIRS.include?([your_choice, comp_choice])
+def evaluate_round(choices)
+  if WIN_PAIRS.include?([choices[:your_choice], choices[:comp_choice]])
     'you_won_round'
-  elsif WIN_PAIRS.include?([comp_choice, your_choice])
+  elsif WIN_PAIRS.include?([choices[:comp_choice], choices[:your_choice]])
     'you_lost_round'
   else
     'a_tie'
@@ -93,13 +96,19 @@ prompt('welcome')
 prompt('how_to_exit')
 
 loop do
-  score = { your_score: 0, computer_score: 0 }
+  score = {
+    your_score: 0,
+    computer_score: 0
+  }
 
   loop do
-    your_choice = request_choice()
-    comp_choice = VALID_CHOICES.sample()
-    display_choices(your_choice, comp_choice)
-    round_winner = evaluate_round(your_choice, comp_choice)
+    choices = {
+      your_choice: request_choice(),
+      comp_choice: VALID_CHOICES.sample()
+    }
+
+    display_choices(choices)
+    round_winner = evaluate_round(choices)
     prompt(round_winner)
     update_score(score, round_winner)
     display_score(score)
