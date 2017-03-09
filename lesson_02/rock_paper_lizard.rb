@@ -30,6 +30,7 @@ def request_choice
     end
     prompt('invalid_input')
   end
+
   VALID_CHOICES.each do |choice|
     return choice if choice.start_with?(your_input)
   end
@@ -42,7 +43,7 @@ def display_choices(your_choice, comp_choice)
   )
 end
 
-def eval_round(your_choice, comp_choice)
+def evaluate_round(your_choice, comp_choice)
   if WIN_PAIRS.include?([your_choice, comp_choice])
     'you_won_round'
   elsif WIN_PAIRS.include?([comp_choice, your_choice])
@@ -52,10 +53,10 @@ def eval_round(your_choice, comp_choice)
   end
 end
 
-def update_score(score, winner)
-  if winner == 'you_won_round'
+def update_score(score, round_winner)
+  if round_winner == 'you_won_round'
     score[:your_score] += 1
-  elsif winner == 'you_lost_round'
+  elsif round_winner == 'you_lost_round'
     score[:computer_score] += 1
   end
 end
@@ -68,11 +69,11 @@ def display_score(score)
   )
 end
 
-def winner?(score)
+def game_winner?(score)
   score[:your_score] == 5 || score[:computer_score] == 5
 end
 
-def display_winner(score)
+def display_game_winner(score)
   prompt("you_lost_game") if score[:computer_score] == 5
   prompt("you_won_game") if score[:your_score] == 5
 end
@@ -96,14 +97,14 @@ loop do
 
   loop do
     your_choice = request_choice()
-    comp_choice = VALID_CHOICES.sample
+    comp_choice = VALID_CHOICES.sample()
     display_choices(your_choice, comp_choice)
-    round_winner = eval_round(your_choice, comp_choice)
+    round_winner = evaluate_round(your_choice, comp_choice)
     prompt(round_winner)
     update_score(score, round_winner)
     display_score(score)
-    if winner?(score)
-      display_winner(score)
+    if game_winner?(score)
+      display_game_winner(score)
       break
     end
   end

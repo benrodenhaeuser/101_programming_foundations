@@ -12,6 +12,6 @@
   "a_tie": "This round is a tie.",
   "again?": "Do you want to play again? (C to continue, Q to quit)",
   "current_score_is": "Your current score is %{your_score}, computer's is %{computer_score}.",
-  "how_to_exit": "You can exit at any time by entering 'q'.",
+  "how_to_exit": "You can exit at any time by entering Q.",
   "bye": "Sad to see you go."
 }
