@@ -7,7 +7,7 @@ choices_made_were: You chose %{player_choice}, computer chose %{comp_choice}.
 player_won_round: You won this round.
 computer_won_round: You lost this round.
 player_won_game: You won the game.
-player_lost_game: You lost the game.
+computer_won_game: You lost the game.
 a_tie: This round is a tie.
 again?: I would like to play again. What do you think? (c to continue, q to quit)
 current_scores_are: Your current score is %{player_score}, computer's is %{computer_score}.
