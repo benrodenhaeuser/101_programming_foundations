@@ -1,7 +1,7 @@
 /* config data for rock paper lizard */
 
 {
-  "welcome": "Welcome! A player who has won 5 times wins the game.",
+  "welcome": "Welcome! A player who has won 5 rounds wins the game.",
   "choose!": "Make your choice among rock (r), paper (p), scissors (sc), lizard (l), spock (sp).",
   "invalid_input": "This is not a valid input.",
   "choices_made_were": "You chose %{your_choice}, computer chose %{comp_choice}.",
