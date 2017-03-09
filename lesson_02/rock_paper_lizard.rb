@@ -67,8 +67,10 @@ end
 def display_score(score)
   prompt(
     'current_score_is',
-    { your_score: score[:your_score],
-      computer_score: score[:computer_score] }
+    {
+      your_score: score[:your_score],
+      computer_score: score[:computer_score]
+    }
   )
 end
 
