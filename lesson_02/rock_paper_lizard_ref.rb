@@ -64,7 +64,7 @@ end
 def update_scores(scores, round_winner)
   case round_winner
   when :player then scores[:player] += 1
-  when :computer then scores[:computer] += 1  
+  when :computer then scores[:computer] += 1
   end
 end
 
@@ -100,7 +100,6 @@ end
 
 prompt('welcome')
 prompt('how_to_exit')
-
 loop do
   scores = {
     player: 0,
