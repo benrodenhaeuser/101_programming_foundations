@@ -45,7 +45,7 @@ def display_choices(choices)
   )
 end
 
-def determine_winner(choices)
+def determine_round_winner(choices)
   if WIN_PAIRS.include?([choices[:player], choices[:computer]])
     :player
   elsif WIN_PAIRS.include?([choices[:computer], choices[:player]])
@@ -62,10 +62,9 @@ def display_round_result(round_winner)
 end
 
 def update_scores(scores, round_winner)
-  if round_winner == :player
-    scores[:player] += 1
-  elsif round_winner == :computer
-    scores[:computer] += 1
+  case round_winner
+  when :player then scores[:player] += 1
+  when :computer then scores[:computer] += 1  
   end
 end
 
@@ -115,7 +114,7 @@ loop do
     }
 
     display_choices(choices)
-    round_winner = determine_winner(choices)
+    round_winner = determine_round_winner(choices)
     display_round_result(round_winner)
     update_scores(scores, round_winner)
     display_scores(scores)
