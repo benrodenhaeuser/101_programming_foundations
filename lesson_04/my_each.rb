@@ -3,6 +3,7 @@ class Array
     for elem in self
       yield(elem)
     end
+    self
   end
 end
 
