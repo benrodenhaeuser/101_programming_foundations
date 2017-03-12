@@ -1,3 +1,3 @@
-# README.md
+# README
 
 Assignments for Course 101
