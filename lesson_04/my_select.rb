@@ -3,9 +3,7 @@ class Array
     new_ary = []
     for elem in self
       return_value = yield(elem)
-      if return_value
-        new_ary << elem
-      end
+      new_ary << elem if return_value
     end
     new_ary
   end
