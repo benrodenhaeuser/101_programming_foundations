@@ -62,7 +62,7 @@ def different_ids?(obj, obj_copy)
 end
 
 def the_same?(obj, obj_copy)
-  obj.to_s == obj_copy.to_s
+  obj == obj_copy
 end
 
 def test_deep_copy(obj)
