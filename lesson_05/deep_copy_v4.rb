@@ -4,9 +4,7 @@
 # built from strings, symbols, integers and floats.
 
 def immutable?(obj)
-  obj.instance_of?(Symbol) ||
-    obj.instance_of?(Float) ||
-    obj.instance_of?(Integer)
+  obj.instance_of?(Symbol) || obj.is_a?(Numeric)
 end
 
 def string?(obj)
@@ -61,7 +59,7 @@ def different_ids?(obj, obj_copy)
   object_ids_differ && nested_object_ids_differ
 end
 
-def the_same?(obj, obj_copy)
+def same_values?(obj, obj_copy)
   obj == obj_copy
 end
 
@@ -69,8 +67,8 @@ def test_deep_copy(obj)
   obj_copy = deep_copy(obj)
   puts "Original: #{obj}"
   puts "Copy:     #{obj_copy}"
-  puts "Original and copy are 'the same'? #{the_same?(obj, obj_copy)}"
-  puts "Different object ids throughout? #{different_ids?(obj, obj_copy)}"
+  puts "Original and copy store the same values? #{same_values?(obj, obj_copy)}"
+  puts "They have different object ids throughout? #{different_ids?(obj, obj_copy)}"
 end
 
 arr = ['a', ['b', 'c'], ['d', ['e', ['f', 'g']]]]
