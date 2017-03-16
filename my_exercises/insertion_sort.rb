@@ -1,31 +1,38 @@
-# implement insertion sort without using any iterators
+# insertion sort
 
-# sort array
+# high-level view of insertion sort:
+# sort array `array` as follows:
+# - create empty ordered array `sorted`
+# - insert elements from `array` into `sorted` one by one,
+# while preserving the "order" property of `sorted` at each step
+# - return `sorted`
+
+# sort given array
 def sort(array)
   sorted = []
   for index in (0...array.size)
-    sorted = insert(array[index], sorted)
+    sorted = order_insert(array[index], sorted)
   end
   sorted
 end
 
-# insert value in sorted array, preserving sortedness
-def insert(value, sorted)
-  return [value] if sorted == []
+# insert value in ordered array, returning an order
+def order_insert(value, order)
+  return [value] if order == []
   # ^ edge case; won't happen if we call from sort
   index = 0
   loop do
-    if value <= sorted[index]
-      sorted = insert_at(index, value, sorted)
+    if value <= order[index]
+      order = insert_at(index, value, order)
       break
     end
     index += 1
-    if index == sorted.size
-      sorted[index] = value
+    if index == order.size
+      order[index] = value
       break
     end
   end
-  sorted
+  order
 end
 
 # insert value in array at index
