@@ -9,7 +9,6 @@
 
 # - loop invariant: "the array array[0...index]" is sorted
 
-
 # sort given array
 def sort(array)
   for index in (1...array.size)
