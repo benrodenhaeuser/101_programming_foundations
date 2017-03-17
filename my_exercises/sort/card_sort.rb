@@ -1,10 +1,9 @@
-# insertion sort
+# sorting to a new array by insertion
 
-# sorting like you would sort a deck of cards:
+# like you would sort a deck of cards:
 # - the input `array` = "the unsorted cards in your right hand"
-# - create empty ordered array `sorted` = "the cards in your left hand"
 # - move cards from you right hand to your left hand, preserving the property
-#   of the cards in your left hand: they are sorted
+#   that the cards in your right hand are sorted (our loop invariant)
 
 # sort given array
 def sort(array)
