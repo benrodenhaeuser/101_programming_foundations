@@ -1,6 +1,7 @@
 # selection sort:
 # for i in (0...array.size):
-# find the index >= i with the smallest value and swap that value with value at index i
+# find the index >= i with the smallest value
+# swap that value with value at index i
 
 def swap(index1, index2, array)
   stored = array[index1]
@@ -9,7 +10,7 @@ def swap(index1, index2, array)
   array
 end
 
-def find_index_of_smallest(array)
+def find_index_of_min(array)
   temp = 0
   for index in (1...array.size)
     if array[index] < array[temp]
@@ -21,7 +22,7 @@ end
 
 def selection_sort(array)
   for index in (0...array.size)
-    index_of_min = find_index_of_smallest(array[index...array.size]) + index
+    index_of_min = find_index_of_min(array[index...array.size]) + index
     swap(index, index_of_min, array)
   end
   array
