@@ -6,7 +6,6 @@ explain_board: |
      represented with 'Y's, and *C*omputer's squares
      will be represented with 'C's.
 bye: Good-Bye!
-choices_made_were: You chose %{human}, and computer chose %{computer}.
 request_choice: Please make your choice among %{choices}.
 invalid_choice: This is not an available choice.
 computer_wins: The computer has won.

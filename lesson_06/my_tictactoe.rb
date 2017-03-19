@@ -102,8 +102,8 @@ end
 
 def computer_moves(board)
   unless full?(board) || winner?(board)
-    computer_choice = available_moves(board).sample
-    board[computer_choice] = :computer
+    computer_move = available_moves(board).sample
+    board[computer_move] = :computer
   end
 end
 
