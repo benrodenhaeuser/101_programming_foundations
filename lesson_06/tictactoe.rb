@@ -1,32 +1,26 @@
 # tic tac toe
 
-#  X |   | X
-# -----------
-#    | O |
-# -----------
-#    | O |
-
 require 'yaml'
 MESSAGES = YAML.load_file('./tictactoe.yml')
 
 PLAYERS = [:user, :computer]
-LEGAL_MOVES = (1..9)
-CENTER_SQUARE = 5
+MOVES = (1..9)
+CENTER_MOVE = 5
 
-FIRST_TURN = :choose # options: :user, :computer, :choose
-NUMBER_OF_WINS_TO_WIN_THE_GAME = 5
+FIRST_TURN = :computer # possible options are :user, :computer, :choose
+WINS_TO_WIN_THE_GAME = 5
 
 WIN_LINES = [
-  [1, 2, 3], [4, 5, 6], [7, 8, 9],
-  [1, 4, 7], [2, 5, 8], [3, 6, 9],
-  [1, 5, 9], [3, 5, 7]
+  [1, 2, 3], [4, 5, 6], [7, 8, 9], # rows
+  [1, 4, 7], [2, 5, 8], [3, 6, 9], # cols
+  [1, 5, 9], [3, 5, 7]             # diags
 ]
 
-USER_CHOICES = %w[TL TM TR ML MM MR BL BM BR]
+USER_CHOICES = %w[TL TM TR ML MM MR BL BM BR] # top left, top middle, ...
 
 MOVES_TO_CHOICES = Hash.new { |key, value| key[value] = [] }
 
-LEGAL_MOVES.each do |move|
+MOVES.each do |move|
   MOVES_TO_CHOICES[move] = USER_CHOICES[move - 1]
 end
 
@@ -36,12 +30,12 @@ CHOICES_TO_MOVES = MOVES_TO_CHOICES.invert
 
 def initialize_board
   board = {}
-  LEGAL_MOVES.each { |move| board[move] = false }
+  MOVES.each { |move| board[move] = false }
   board
 end
 
 def available_moves(board)
-  LEGAL_MOVES.select { |move| board[move] == false }
+  MOVES.select { |move| board[move] == false }
 end
 
 def get_move(player, board)
@@ -58,15 +52,15 @@ def get_computer_move(board)
     threats_for(:user, board).sample # 'offense'
   elsif threats_for(:computer, board) != []
     threats_for(:computer, board).sample # 'defense'
-  elsif available_moves(board).include?(CENTER_SQUARE)
-    CENTER_SQUARE
+  elsif available_moves(board).include?(CENTER_MOVE)
+    CENTER_MOVE
   else
     available_moves(board).sample
   end
 end
 
 def threats_for(player, board)
-  LEGAL_MOVES.select { |move| threat_for?(player, move, board) }
+  MOVES.select { |move| threat_for?(player, move, board) }
 end
 
 def threat_for?(player, move, board)
@@ -93,7 +87,7 @@ end
 def winner?(board, player)
   WIN_LINES.any? do |line|
     line.all? do |square|
-      LEGAL_MOVES.select { |move| board[move] == player }.include?(square)
+      MOVES.select { |move| board[move] == player }.include?(square)
     end
   end
 end
@@ -132,7 +126,7 @@ end
 
 def request_turn_decision
   loop do
-    prompt('want_to_begin?')
+    prompt('want_to_have_first_turn?')
     print '   '
     answer = gets.chomp
     case answer.upcase
@@ -143,12 +137,20 @@ def request_turn_decision
   end
 end
 
-def announce_who_begins(player)
-  case player
-  when :computer then prompt('computer_begins')
-  when :user then prompt('user_begins')
-  end
-  sleep 0.1
+def display_state(board, scores)
+  system 'clear'
+  present(scores)
+  display(board)
+end
+
+def present(scores)
+  prompt(
+    'the current_scores_are',
+    {
+      user_score: scores[:user],
+      computer_score: scores[:computer]
+    }
+  )
 end
 
 def display(board)
@@ -217,16 +219,6 @@ def announce_winner(player)
   end
 end
 
-def present(scores)
-  prompt(
-    'the current_scores_are',
-    {
-      user_score: scores[:user],
-      computer_score: scores[:computer]
-    }
-  )
-end
-
 def announce_overall_winner(player)
   case player
   when :computer
@@ -253,15 +245,14 @@ end
 # game loop
 
 loop do
-  system "clear"
+  system 'clear'
   welcome_the_user
   if FIRST_TURN == :choose
     player = request_turn_decision
   else
-    wait_for_user
     player = FIRST_TURN
+    wait_for_user
   end
-  announce_who_begins(player)
 
   scores = {
     computer: 0,
@@ -270,13 +261,13 @@ loop do
 
   loop do
     board = initialize_board
-    display(board)
+    display_state(board, scores)
 
     loop do
       move = get_move(player, board)
-      parrot(player, move)
       update(board, move, player)
-      display(board)
+      display_state(board, scores)
+      parrot(player, move)
 
       if winner?(board, player)
         announce_winner(player)
@@ -290,8 +281,7 @@ loop do
       player = other(player)
     end
 
-    present(scores)
-    if scores[player] == NUMBER_OF_WINS_TO_WIN_THE_GAME
+    if scores[player] == WINS_TO_WIN_THE_GAME
       announce_overall_winner(player)
       break
     end

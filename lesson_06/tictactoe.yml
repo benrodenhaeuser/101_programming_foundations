@@ -12,7 +12,7 @@ explain_moves: |
      BL (bottom left) | BM (bottom middle) | BR (bottom right)
 explain_winning_conditions: The first player to win five rounds wins the game.
 please_press_enter: Please press enter to continue.
-want_to_begin?: Would you like to be the first player to move? (Y/N)
+want_to_have_first_turn?: Would you like to be the first player to move? (Y/N)
 bye: Good-Bye!
 request_choice: Please make your choice – %{choices}.
 invalid_choice: This is not an available choice.
@@ -23,6 +23,6 @@ computer_chose: Computer chose %{move}.
 computer_wins: The computer won.
 user_wins: You won.
 its_a_tie: This round is a tie.
-the current_scores_are: The current scores are %{user_score} for you and %{computer_score} for computer.
+the current_scores_are: You have won %{user_score} rounds so far, computer has won %{computer_score}.
 the_overall_winner_is: We have an overall winner. It's %{winner}.
 another_game?: Would you like to play again? (Y/N)
