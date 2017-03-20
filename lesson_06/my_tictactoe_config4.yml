@@ -5,7 +5,6 @@ explain_board: |
   In the game board, *Y*our choices will be
      represented with 'Y's, and *C*omputer's choices
      will be represented with 'C's.
-explain_cointoss: A coin-toss will determine who gets to start. Computer chose heads.
 explain_moves: |
   Here's how to reference the squares:
      TL (top left)    | TM (top middle)    | TR (top right)
@@ -13,11 +12,12 @@ explain_moves: |
      BL (bottom left) | BM (bottom middle) | BR (bottom right)
 explain_winning_conditions: The first player to win five rounds wins the game.
 please_press_enter: Please press enter to continue.
+want_to_begin?: Would you like to be the first player to move? (Y/N)
 bye: Good-Bye!
 request_choice: Please make your choice – %{choices}.
 invalid_choice: This is not an available choice.
-computer_begins: It's heads! The computer begins.
-user_begins: It's tails! You begin.
+computer_begins: The computer begins.
+user_begins: You begin.
 user_chose: You chose %{move}.
 computer_chose: Computer chose %{move}.
 computer_wins: The computer won.

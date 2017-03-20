@@ -1,23 +1,28 @@
 require 'yaml'
-MESSAGES = YAML.load_file('./my_tictactoe_config3.yml')
+MESSAGES = YAML.load_file('./my_tictactoe_config4.yml')
 
 PLAYERS = [:user, :computer]
 LEGAL_MOVES = (1..9)
-CENTER_SQUARE = 5 # only square to occur in four winning lines
+CENTER_SQUARE = 5
 
-WINNING_LINES = [
-  [1, 2, 3], [4, 5, 6], [7, 8, 9], # winning rows
-  [1, 4, 7], [2, 5, 8], [3, 6, 9], # winning columns
-  [1, 5, 9], [3, 5, 7]             # winning diagonals
+FIRST_TURN = :choose # legal settings: :user, :computer, :choose
+NUMBER_OF_WINS_TO_WIN_THE_GAME = 5
+
+WIN_LINES = [
+  [1, 2, 3], [4, 5, 6], [7, 8, 9],
+  [1, 4, 7], [2, 5, 8], [3, 6, 9],
+  [1, 5, 9], [3, 5, 7]
 ]
 
-USER_CHOICES = %w[TL TM TR ML MM MR BL BM BR] # top left, top middle, ...
+USER_CHOICES = %w[TL TM TR ML MM MR BL BM BR]
 
-MOVES_TO_USER_CHOICES = Hash.new { |key, value| key[value] = [] }
+MOVES_TO_CHOICES = Hash.new { |key, value| key[value] = [] }
+
 LEGAL_MOVES.each do |move|
-  MOVES_TO_USER_CHOICES[move] = USER_CHOICES[move - 1]
+  MOVES_TO_CHOICES[move] = USER_CHOICES[move - 1]
 end
-USER_CHOICES_TO_MOVES = MOVES_TO_USER_CHOICES.invert
+
+CHOICES_TO_MOVES = MOVES_TO_CHOICES.invert
 
 # game mechanics
 
@@ -41,23 +46,33 @@ end
 def get_computer_move(board)
   sleep 0.5
 
-  if immediate_threats_for(:user, board)
-    immediate_threats_for(:user, board).sample
-  elsif immediate_threats_for(:computer, board)
-    immediate_threats_for(:computer, board).sample
+  if threats_for(:user, board) != []
+    threats_for(:user, board).sample # 'offense'
+  elsif threats_for(:computer, board) != []
+    threats_for(:computer, board).sample # 'defense'
   elsif available_moves(board).include?(CENTER_SQUARE)
     CENTER_SQUARE
-  else available_moves(board).sample
+  else
+    available_moves(board).sample
   end
 end
 
-def immediate_threats_for(player, board)
-  false
+def threats_for(player, board)
+  LEGAL_MOVES.select { |move| threat_for?(player, move, board) }
+end
+
+def threat_for?(player, move, board)
+  if available_moves(board).include?(move)
+    evaluation_board = board.clone
+    update(evaluation_board, move, other(player))
+
+    winner?(evaluation_board, other(player))
+  end
 end
 
 def get_user_move(board)
   user_choice = request_user_choice(board)
-  USER_CHOICES_TO_MOVES[user_choice]
+  CHOICES_TO_MOVES[user_choice]
 end
 
 def update(board, move, player)
@@ -68,7 +83,7 @@ def update(board, move, player)
 end
 
 def winner?(board, player)
-  WINNING_LINES.any? do |line|
+  WIN_LINES.any? do |line|
     line.all? do |square|
       LEGAL_MOVES.select { |move| board[move] == player }.include?(square)
     end
@@ -98,7 +113,6 @@ def welcome_the_user
   prompt('explain_board')
   prompt('explain_moves')
   prompt('explain_winning_conditions')
-  prompt('explain_cointoss')
 end
 
 def wait_for_user
@@ -106,6 +120,20 @@ def wait_for_user
   print '   '
   gets
   sleep 0.1
+end
+
+def request_turn_decision
+  loop do
+    prompt('want_to_begin?')
+    print '   '
+    answer = gets.chomp
+    if answer.upcase == 'Y'
+      return :user
+    elsif answer.upcase == 'N'
+      return :computer
+    end
+    prompt('invalid_choice')
+  end
 end
 
 def announce_who_begins(player)
@@ -153,7 +181,7 @@ def request_user_choice(board)
 end
 
 def available_choices(board)
-  available_moves(board).map { |move| MOVES_TO_USER_CHOICES[move] }
+  available_moves(board).map { |move| MOVES_TO_CHOICES[move] }
 end
 
 def joinor(array, delimiter = ',', joinword = 'or')
@@ -170,7 +198,7 @@ def joinor(array, delimiter = ',', joinword = 'or')
 end
 
 def parrot(player, move)
-  move_as_choice = MOVES_TO_USER_CHOICES[move]
+  move_as_choice = MOVES_TO_CHOICES[move]
   case player
   when :computer then prompt('computer_chose', { move: move_as_choice })
   when :user then prompt('user_chose', { move: move_as_choice })
@@ -222,8 +250,12 @@ end
 loop do
   system "clear"
   welcome_the_user
-  wait_for_user
-  player = PLAYERS.sample
+  if FIRST_TURN == :choose
+    player = request_turn_decision
+  else
+    wait_for_user
+    player = FIRST_TURN
+  end
   announce_who_begins(player)
 
   scores = {
@@ -254,7 +286,7 @@ loop do
     end
 
     present(scores)
-    if scores[player] == 2 # TODO: should really be 5
+    if scores[player] == NUMBER_OF_WINS_TO_WIN_THE_GAME
       announce_overall_winner(player)
       break
     end
