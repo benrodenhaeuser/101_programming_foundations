@@ -1,11 +1,19 @@
+# tic tac toe
+
+#  X |   | X
+# -----------
+#    | O |
+# -----------
+#    | O |
+
 require 'yaml'
-MESSAGES = YAML.load_file('./my_tictactoe_config4.yml')
+MESSAGES = YAML.load_file('./tictactoe.yml')
 
 PLAYERS = [:user, :computer]
 LEGAL_MOVES = (1..9)
 CENTER_SQUARE = 5
 
-FIRST_TURN = :choose # legal settings: :user, :computer, :choose
+FIRST_TURN = :choose # options: :user, :computer, :choose
 NUMBER_OF_WINS_TO_WIN_THE_GAME = 5
 
 WIN_LINES = [
@@ -127,10 +135,9 @@ def request_turn_decision
     prompt('want_to_begin?')
     print '   '
     answer = gets.chomp
-    if answer.upcase == 'Y'
-      return :user
-    elsif answer.upcase == 'N'
-      return :computer
+    case answer.upcase
+    when 'Y' then return :user
+    when 'N' then return :computer
     end
     prompt('invalid_choice')
   end
@@ -145,27 +152,27 @@ def announce_who_begins(player)
 end
 
 def display(board)
-  pretty_board = convert_for_output(board)
+  display_board = convert_for_display(board)
 
   puts
-  puts "    #{pretty_board[1]} | #{pretty_board[2]} | #{pretty_board[3]} "
+  puts "    #{display_board[1]} | #{display_board[2]} | #{display_board[3]} "
   puts "   -----------"
-  puts "    #{pretty_board[4]} | #{pretty_board[5]} | #{pretty_board[6]} "
+  puts "    #{display_board[4]} | #{display_board[5]} | #{display_board[6]} "
   puts "   -----------"
-  puts "    #{pretty_board[7]} | #{pretty_board[8]} | #{pretty_board[9]} "
+  puts "    #{display_board[7]} | #{display_board[8]} | #{display_board[9]} "
   puts
 end
 
-def convert_for_output(board)
-  pretty_board = {}
+def convert_for_display(board)
+  display_board = {}
   board.each do |key, _|
     case board[key]
-    when false     then pretty_board[key] = ' '
-    when :computer then pretty_board[key] = 'C'
-    when :user     then pretty_board[key] = 'Y'
+    when false     then display_board[key] = ' '
+    when :computer then display_board[key] = 'X'
+    when :user     then display_board[key] = 'O'
     end
   end
-  pretty_board
+  display_board
 end
 
 def request_user_choice(board)
@@ -184,17 +191,15 @@ def available_choices(board)
   available_moves(board).map { |move| MOVES_TO_CHOICES[move] }
 end
 
-def joinor(array, delimiter = ',', joinword = 'or')
-  string = array[0].clone
-  index = 1
-  while index < array.size - 1
-    string << "#{delimiter} #{array[index]}"
-    index += 1
+def joinor(array, delimiter = ', ', word = 'or')
+  case array.size
+  when 0 then ''
+  when 1 then array.first
+  when 2 then array.join(" #{word} ")
+  else
+    array[-1] = "#{word} #{array.last}"
+    array.join(delimiter)
   end
-  if array.size > 1
-    string << "#{delimiter} #{joinword} #{array[array.size - 1]}"
-  end
-  string
 end
 
 def parrot(player, move)
