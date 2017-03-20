@@ -1,32 +1,78 @@
 require 'yaml'
-MESSAGES = YAML.load_file('./my_tictactoe_config2.yml')
-
-# it would be nicer if we just had players, moves, choices, and lines.
-# then build the two hashes from these data.
+MESSAGES = YAML.load_file('./my_tictactoe_config3.yml')
 
 PLAYERS = [:user, :computer]
 LEGAL_MOVES = (1..9)
-
-# USER_CHOICES = [ ... ]
-
 WINNING_LINES = [
   [1, 2, 3], [4, 5, 6], [7, 8, 9], # winning rows
   [1, 4, 7], [2, 5, 8], [3, 6, 9], # winning columns
   [1, 5, 9], [3, 5, 7]             # winning diagonals
 ]
 
-# moves_to_user_choices = ...
-# user_choices_to_moves = moves_to_user_choices_invert
+USER_CHOICES = %w[TL TM TR ML MM MR BL BM BR] # top left, top middle, ...
 
-# the next two hashes are then redundant:
-MOVES_TO_USER_CHOICES = {
-  1 => 'TL', 2 => 'TM', 3 => 'TR',
-  4 => 'ML', 5 => 'MM', 6 => 'MR',
-  7 => 'BL', 8 => 'BM', 9 => 'BR'
-}
+MOVES_TO_USER_CHOICES = Hash.new { |key, value| key[value] = [] }
+LEGAL_MOVES.each do |move|
+  MOVES_TO_USER_CHOICES[move] = USER_CHOICES[move - 1]
+end
 USER_CHOICES_TO_MOVES = MOVES_TO_USER_CHOICES.invert
 
-# USER INTERFACE
+# game mechanics
+
+def initialize_board
+  board = {}
+  LEGAL_MOVES.each { |move| board[move] = false }
+  board
+end
+
+def available_moves(board)
+  LEGAL_MOVES.select { |move| board[move] == false }
+end
+
+def get_move(player, board)
+  case player
+  when :user then get_user_move(board)
+  when :computer then get_computer_move(board)
+  end
+end
+
+def get_computer_move(board)
+  sleep 0.5
+  available_moves(board).sample
+end
+
+def get_user_move(board)
+  user_choice = request_user_choice(board)
+  USER_CHOICES_TO_MOVES[user_choice]
+end
+
+def update(board, move, player)
+  case player
+  when :computer then board[move] = :computer
+  when :user then board[move] = :user
+  end
+end
+
+def winner?(board, player)
+  WINNING_LINES.any? do |line|
+    line.all? do |square|
+      LEGAL_MOVES.select { |move| board[move] == player }.include?(square)
+    end
+  end
+end
+
+def full?(board)
+  available_moves(board) == []
+end
+
+def other(player)
+  case player
+  when :computer then :user
+  when :user then :computer
+  end
+end
+
+# user interface
 
 def prompt(message, subst = {})
   message = MESSAGES[message] % subst
@@ -37,14 +83,15 @@ def welcome_the_user
   prompt('welcome')
   prompt('explain_board')
   prompt('explain_moves')
+  prompt('explain_winning_conditions')
+  prompt('explain_cointoss')
 end
 
-def toss_a_coin
-  prompt('explain_cointoss')
+def wait_for_user
   prompt('please_press_enter')
   print '   '
   gets
-  sleep 0.5
+  sleep 0.1
 end
 
 def announce_who_begins(player)
@@ -52,7 +99,7 @@ def announce_who_begins(player)
   when :computer then prompt('computer_begins')
   when :user then prompt('user_begins')
   end
-  sleep 0.3
+  sleep 0.1
 end
 
 def display(board)
@@ -116,10 +163,29 @@ def parrot(player, move)
   end
 end
 
-def announce_winner(winner)
-  case winner
+def announce_winner(player)
+  case player
   when :computer then prompt('computer_wins')
   when :user then prompt('user_wins')
+  end
+end
+
+def present(scores)
+  prompt(
+    'the current_scores_are',
+    {
+      user_score: scores[:user],
+      computer_score: scores[:computer]
+    }
+  )
+end
+
+def announce_overall_winner(player)
+  case player
+  when :computer
+    prompt('the_overall_winner_is', { winner: 'the computer' })
+  when :user
+    prompt('the_overall_winner_is', { winner: 'you' })
   end
 end
 
@@ -137,83 +203,51 @@ def user_wants_to_play_again?
   end
 end
 
-# INTERNAL GAME MECHANICS
-
-def initialize_board
-  board = {}
-  LEGAL_MOVES.each { |move| board[move] = false }
-  board
-end
-
-def available_moves(board)
-  LEGAL_MOVES.select { |move| !board[move] }
-end
-
-def get_move(player, board)
-  case player
-  when :user then get_user_move(board)
-  when :computer then get_computer_move(board)
-  end
-end
-
-def get_computer_move(board)
-  sleep 0.5
-  available_moves(board).sample
-end
-
-def get_user_move(board)
-  user_choice = request_user_choice(board)
-  user_move = USER_CHOICES_TO_MOVES[user_choice]
-end
-
-def update(board, move, player)
-  case player
-  when :computer then board[move] = :computer
-  when :user then board[move] = :user
-  end
-end
-
-def winner?(board, player)
-  WINNING_LINES.any? do |line|
-    line.all? do |move|
-      LEGAL_MOVES.select { |move| board[move] == player }.include?(move)
-    end
-  end
-end
-
-def full?(board)
-  available_moves(board) == []
-end
-
-def switch(player)
-  case player
-  when :computer then :user
-  when :user then :computer
-  end
-end
-
 # game loop
 
 loop do
   system "clear"
-  board = initialize_board
   welcome_the_user
-  display(board)
-  toss_a_coin
-  current_player = PLAYERS.sample
-  announce_who_begins(current_player)
+  wait_for_user
+  player = PLAYERS.sample
+  announce_who_begins(player)
+
+  scores = {
+    computer: 0,
+    user: 0
+  }
 
   loop do
-    current_move = get_move(current_player, board)
-    update(board, current_move, current_player)
-    parrot(current_player, current_move)
+    board = initialize_board
     display(board)
-    break announce_winner(current_player) if winner?(board, current_player)
-    break prompt('its_a_tie') if full?(board)
-    current_player = switch(current_player)
+
+    loop do
+      move = get_move(player, board)
+      parrot(player, move)
+      update(board, move, player)
+      display(board)
+
+      if winner?(board, player)
+        announce_winner(player)
+        scores[player] += 1
+        break
+      elsif full?(board)
+        prompt('its_a_tie')
+        break
+      end
+
+      player = other(player)
+    end
+
+    present(scores)
+    if scores[player] == 2 # TODO: should really be 5
+      announce_overall_winner(player)
+      break
+    end
+    player = other(player)
+
+    wait_for_user
   end
 
-  break unless user_wants_to_play_again?
+  break prompt('bye') unless user_wants_to_play_again?
 end
-
-prompt('bye')
