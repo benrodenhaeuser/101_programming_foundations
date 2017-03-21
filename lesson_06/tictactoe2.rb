@@ -21,7 +21,6 @@ WINS_TO_WIN_THE_GAME = 5
 def initialize_board
   board = {}
   MOVES.each { |move| board[move] = false }
-  p board
   board
 end
 
