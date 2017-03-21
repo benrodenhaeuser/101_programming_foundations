@@ -112,14 +112,15 @@ end
 
 def request_turn_decision
   loop do
-    prompt('want_to_have_FIRST_TO_MOVE?')
+    prompt('want_to_have_first_turn?')
     print '   '
     answer = gets.chomp
     case answer.upcase
-    when 'Y' then return :user
-    when 'N' then return :computer
+    when 'Y' then break :user
+    when 'N' then break :computer
+    else
+      prompt('invalid_choice')
     end
-    prompt('invalid_choice')
   end
 end
 
@@ -209,6 +210,8 @@ def announce_overall_winner(player)
   end
 end
 
+# TODO: The loop in this method only works in method context,
+# not in isolation
 def user_wants_to_play_again?
   loop do
     prompt('anopponent_of_game?')
