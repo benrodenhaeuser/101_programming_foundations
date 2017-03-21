@@ -107,11 +107,18 @@ board = {
   "7"=>false, "8"=>:user, "9"=>false
 }
 
-p value_of(board, :user, :user) # 1
-p best_moves(:user, board) # ["4", "6", "7", "9"]
+p value_of(board, :user, :user) # 1 that is correct.
+p best_moves(:user, board) # ["4", "6", "7", "9"] (correct, either way results in a win)
 
+# "RIGGED" BOARD
+board = {
+  "1"=>false, "2"=>:user, "3"=>false,
+  "4"=>false, "5"=>false, "6"=>:user,
+  "7"=>:computer, "8"=>:computer, "9"=>:user
+}
 
-
+# p value_of(board, :computer, :computer) # -1 (correct)
+# p best_moves(:computer, board)  # ["1", "3", "4", "5"] (correct, computer will lose anyway)
 
 # TWO STEPS TO A FORCED WIN
 board = {
