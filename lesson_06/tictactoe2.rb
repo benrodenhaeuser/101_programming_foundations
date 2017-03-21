@@ -7,14 +7,14 @@ PLAYERS = [:user, :computer]
 MOVES = %w[TL TM TR ML MM MR BL BM BR]
 CENTER_MOVE = 'MM'
 
-FIRST_TURN = :computer # possible options are :user, :computer, :choose
-WINS_TO_WIN_THE_GAME = 5
-
 WIN_LINES = [
   %w[TL TM TR], %w[ML MM MR], %w[BL BM BR], # rows
   %w[TL ML BL], %w[TM MM BM], %w[TR MR BR], # cols
   %w[TL MM BR], %w[TR MM BL]                # diags
 ]
+
+FIRST_TO_MOVE = :computer # possible options are :user, :computer, :choose
+WINS_TO_WIN_THE_GAME = 5
 
 # game mechanics
 
@@ -112,7 +112,7 @@ end
 
 def request_turn_decision
   loop do
-    prompt('want_to_have_first_turn?')
+    prompt('want_to_have_FIRST_TO_MOVE?')
     print '   '
     answer = gets.chomp
     case answer.upcase
@@ -228,10 +228,10 @@ end
 loop do
   system 'clear'
   welcome_the_user
-  if FIRST_TURN == :choose
+  if FIRST_TO_MOVE == :choose
     player = request_turn_decision
   else
-    player = FIRST_TURN
+    player = FIRST_TO_MOVE
     wait_for_user
   end
 
