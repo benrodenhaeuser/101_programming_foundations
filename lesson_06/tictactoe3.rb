@@ -78,10 +78,14 @@ end
 
 def winner?(board, player)
   WIN_LINES.any? do |line|
-    line.all? do |square|
-      MOVES.select { |move| board[move] == player }.include?(square)
+    line.all? do |move|
+      moves_so_far_of(player, board).include?(move)
     end
   end
+end
+
+def moves_so_far_of(player, board)
+  MOVES.select { |move| board[move] == player }
 end
 
 def full?(board)
