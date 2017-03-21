@@ -170,9 +170,10 @@ def request_user_move(board)
     print '   '
     user_move = gets.chomp.upcase
     if available_moves(board).include?(user_move)
-      return user_move
+      break user_move
+    else
+      prompt('invalid_choice')
     end
-    prompt('invalid_choice')
   end
 end
 
@@ -210,19 +211,18 @@ def announce_overall_winner(player)
   end
 end
 
-# TODO: The loop in this method only works in method context,
-# not in isolation
 def user_wants_to_play_again?
   loop do
-    prompt('anopponent_of_game?')
+    prompt('another_game?')
     print '   '
     answer = gets.chomp
     if answer.upcase == 'Y'
-      return true
+      break true
     elsif answer.upcase == 'N'
-      return false
+      break false
+    else
+      prompt('invalid_choice')
     end
-    prompt('invalid_choice')
   end
 end
 
