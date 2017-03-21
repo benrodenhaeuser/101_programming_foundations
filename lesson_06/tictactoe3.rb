@@ -1,19 +1,26 @@
 # tic tac toe
 
 require 'yaml'
-MESSAGES = YAML.load_file('./tictactoe2.yml')
+MESSAGES = YAML.load_file('./tictactoe3.yml')
 
 PLAYERS = [:user, :computer]
-MOVES = %w[TL TM TR ML MM MR BL BM BR]
-CENTER_MOVE = 'MM'
+
+# configure move variables below
+M1 = '1'; M2 = '2'; M3 = '3'
+M4 = '4'; M5 = '5'; M6 = '6'
+M7 = '7'; M8 = '8'; M9 = '9'
+
+MOVES = [M1, M2, M3, M4, M5, M6, M7, M8, M9]
+CENTER_MOVE = M5
 
 WIN_LINES = [
-  %w[TL TM TR], %w[ML MM MR], %w[BL BM BR], # rows
-  %w[TL ML BL], %w[TM MM BM], %w[TR MR BR], # cols
-  %w[TL MM BR], %w[TR MM BL]                # diags
+  [M1, M2, M3], [M4, M5, M6], [M7, M8, M9], # rows
+  [M1, M4, M7], [M2, M5, M8], [M3, M6, M9], # cols
+  [M1, M5, M9], [M3, M5, M7]                # diags
 ]
 
-FIRST_TO_MOVE = :computer # possible options are :user, :computer, :choose
+# configure who gets to start below (options are :user, :computer, :choose)
+FIRST_TO_MOVE = :computer
 WINS_TO_WIN_THE_GAME = 5
 
 # game mechanics
@@ -98,7 +105,14 @@ end
 def welcome_the_user
   prompt('welcome')
   prompt('explain_board')
-  prompt('explain_moves')
+  prompt(
+    'explain_moves',
+    {
+      m1: M1, m2: M2, m3: M3,
+      m4: M4, m5: M5, m6: M6,
+      m7: M7, m8: M8, m9: M9
+    }
+  )
   prompt('explain_winning_conditions')
 end
 
@@ -143,11 +157,11 @@ def display(board)
   d_board = convert_for_display(board)
 
   puts
-  puts "    #{d_board['TL']} | #{d_board['TM']} | #{d_board['TR']} "
+  puts "    #{d_board[M1]} | #{d_board[M2]} | #{d_board[M3]} "
   puts "   -----------"
-  puts "    #{d_board['ML']} | #{d_board['MM']} | #{d_board['MR']} "
+  puts "    #{d_board[M4]} | #{d_board[M5]} | #{d_board[M6]} "
   puts "   -----------"
-  puts "    #{d_board['BL']} | #{d_board['BM']} | #{d_board['BR']} "
+  puts "    #{d_board[M7]} | #{d_board[M8]} | #{d_board[M9]} "
   puts
 end
 
