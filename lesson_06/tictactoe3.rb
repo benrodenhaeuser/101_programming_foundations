@@ -21,6 +21,8 @@ WIN_LINES = [
 
 # configure who gets to start below (options are :user, :computer, :choose)
 FIRST_TO_MOVE = :computer
+
+# configure number of round wins sufficient to win the game below
 WINS_TO_WIN_THE_GAME = 5
 
 # game mechanics
@@ -112,12 +114,10 @@ def welcome_the_user
   prompt(
     'explain_moves',
     {
-      m1: M1, m2: M2, m3: M3,
-      m4: M4, m5: M5, m6: M6,
-      m7: M7, m8: M8, m9: M9
+      m1: M1, m2: M2, m3: M3, m4: M4, m5: M5, m6: M6, m7: M7, m8: M8, m9: M9
     }
   )
-  prompt('explain_winning_conditions')
+  prompt('explain_winning_conditions', { rounds: WINS_TO_WIN_THE_GAME })
 end
 
 def wait_for_user
