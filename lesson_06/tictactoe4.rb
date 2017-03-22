@@ -1,25 +1,57 @@
 # tic tac toe
+
+# user messages config
+
 require 'yaml'
-MESSAGES = YAML.load_file('./tictactoe4.yml')
 
-# configuration
+messages =
+"welcome: Welcome to Tic Tac Toe!
+explain_board: |
+  In the game board, your pieces will be
+     represented with 'O's, and Computer's pieces
+     will be represented with 'X's.
+explain_moves: |
+  Here's how to reference the squares:
+     %{m1} (top left)    | %{m2} (top middle)    | %{m3} (top right)
+     %{m4} (middle left) | %{m5} (middle middle) | %{m6} (middle right)
+     %{m7} (bottom left) | %{m8} (bottom middle) | %{m9} (bottom right)
+explain_winning_conditions: The first player to win %{rounds} rounds wins the game.
+please_press_enter: Please press enter to continue.
+want_to_have_first_turn?: Would you like to be the first player to move? (Y/N)
+bye: Good-Bye!
+request_move: Please make your choice – %{moves}.
+invalid_choice: This is not an available choice.
+computer_begins: The computer begins.
+user_begins: You begin.
+user_chose: You chose %{move}.
+computer_chose: Computer chose %{move}.
+computer_wins: The computer won.
+user_wins: You won.
+its_a_tie: This round is a tie.
+the current_scores_are: You have won %{user_score} rounds so far, computer has won %{computer_score}.
+the_overall_winner_is: We have an overall winner. It's %{winner}.
+another_game?: Would you like to play again? (Y/N)"
 
-# move variables (string  )
+MESSAGES = YAML.load(messages)
+
+# game config
+
+# move variables
 M1 = '1'; M2 = '2'; M3 = '3'
 M4 = '4'; M5 = '5'; M6 = '6'
 M7 = '7'; M8 = '8'; M9 = '9'
 
-# who gets to start (:user, :computer, :choose)
-FIRST_TO_MOVE = :computer
+# who makes the first move in the first round? (:user, :computer, :choose)
+FIRST_TO_MOVE = :user
 
-# number of round wins sufficient to win the game (integer)
+# number of round wins to achieve overall win
 WINS_TO_WIN_THE_GAME = 5
 
-# skill level of computer
-# 1: 'chooses at random',
-# 2: 'takes into account immediate threats and opportunities'
-# 3: 'uses minimax algorithm'
-SKILL_LEVEL = 2
+# game difficulty level
+# 1: 'easy',
+# 2: 'medium'
+# 3: 'impossible to win'
+SKILL_LEVEL = 3
 
 # game mechanics
 
@@ -33,34 +65,25 @@ def initialize_board
 end
 
 def available_moves(board)
-  MOVES.select { |move| board[move] == false }
+  MOVES.select { |move| !board[move] }
+end
+
+def moves_so_far_of(player, board)
+  MOVES.select { |move| board[move] == player }
+end
+
+def full?(board)
+  available_moves(board) == []
+end
+
+def empty?(board)
+  available_moves(board) == MOVES
 end
 
 def get_move(player, board)
   case player
   when :user then request_user_move(board)
   when :computer then get_computer_move(board)
-  end
-end
-
-def get_computer_move(board)
-  sleep 0.5 # computer is thinking
-
-  case SKILL_LEVEL
-  when 1
-    available_moves(board).sample
-  when 2
-    if threats_for(:user, board) != []
-      threats_for(:user, board).sample
-    elsif threats_for(:computer, board) != []
-      threats_for(:computer, board).sample
-    elsif available_moves(board).include?(CENTER_MOVE)
-      CENTER_MOVE
-    else
-      available_moves(board).sample
-    end
-  when 3
-    best_move(:computer, board)
   end
 end
 
@@ -84,14 +107,6 @@ def winner?(board, player)
   !!moves_so_far_of(player, board).join.match(win_strings)
 end
 
-def moves_so_far_of(player, board)
-  MOVES.select { |move| board[move] == player }
-end
-
-def full?(board)
-  available_moves(board) == []
-end
-
 def opponent_of(player)
   case player
   when :computer then :user
@@ -99,54 +114,44 @@ def opponent_of(player)
   end
 end
 
-# computer skills at level 3
+# computer moves
 
-def best_move(player, board)
-  move_options = []
-  resulting_board_scores = []
+def get_computer_move(board)
+  sleep 0.5 # computer is thinking
 
-  available_moves(board).each do |move|
-    evaluation_board = board.clone
-    update(evaluation_board, move, player)
-    move_options << move
-    resulting_board_scores << value_of(evaluation_board, player, opponent_of(player))
+  case SKILL_LEVEL
+  when 1
+    get_level_one_move(board)
+  when 2
+    get_level_two_move(board)
+  when 3
+    get_level_three_move(board)
   end
-
-  max = resulting_board_scores.max
-  index = resulting_board_scores.index(max)
-  move_options[index]
 end
 
-def value_of(board, player, player_to_move)
-  if winner?(board, player)
-    1
-  elsif winner?(board, opponent_of(player))
-    -1
-  elsif full?(board)
-    0
+def get_level_one_move(board)
+  available_moves(board).sample
+end
+
+def get_level_two_move(board)
+  if threats_for(:user, board) != []
+    threats_for(:user, board).sample
+  elsif threats_for(:computer, board) != []
+    threats_for(:computer, board).sample
+  elsif available_moves(board).include?(CENTER_MOVE)
+    CENTER_MOVE
   else
-    case player_to_move
-    when opponent_of(player)
-      next_board_values = []
-        available_moves(board).each do |move|
-          update(board, move, player_to_move)
-          next_board_values << value_of(board, player, player)
-          undo(move, board)
-        end
-      next_board_values.min
-    when player
-      next_board_values = []
-      available_moves(board).each do |move|
-        update(board, move, player_to_move)
-        next_board_values << value_of(board, player, opponent_of(player))
-        undo(move, board)
-      end
-      next_board_values.max
-    end
+    available_moves(board).sample
   end
 end
 
-# computer skills at level 2
+def get_level_three_move(board)
+  if empty?(board)
+    available_moves(board).sample
+  else
+    evaluate(board, :computer, :computer)[:best_moves].sample
+  end
+end
 
 def threats_for(player, board)
   MOVES.select { |move| threat_for?(player, move, board) }
@@ -159,6 +164,49 @@ def threat_for?(player, move, board)
     undo(move, board)
     result
   end
+end
+
+def evaluate(board, player, player_to_move)
+  evaluation = { value_of_position: nil, best_moves: [] }
+
+  if winner?(board, player)
+    evaluation[:value_of_position] = 1
+  elsif winner?(board, opponent_of(player))
+    evaluation[:value_of_position] = -1
+  elsif full?(board)
+    evaluation[:value_of_position] = 0
+  else
+    moves_scores = []
+
+    case player_to_move
+    when opponent_of(player)
+      available_moves(board).each do |move|
+        update(board, move, player_to_move)
+        moves_scores << evaluate(board, player, player)[:value_of_position]
+        undo(move, board)
+      end
+      evaluation[:value_of_position] = moves_scores.min
+      available_moves(board).each_with_index do |move, index|
+        if moves_scores[index] == evaluation[:value_of_position]
+          evaluation[:best_moves] << move
+        end
+      end
+    when player
+      available_moves(board).each do |move|
+        update(board, move, player_to_move)
+        moves_scores << evaluate(board, player, opponent_of(player))[:value_of_position]
+        undo(move, board)
+      end
+      evaluation[:value_of_position] = moves_scores.max
+      available_moves(board).each_with_index do |move, index|
+        if moves_scores[index] == evaluation[:value_of_position]
+          evaluation[:best_moves] << move
+        end
+      end
+    end
+  end
+
+  evaluation
 end
 
 # user interface
