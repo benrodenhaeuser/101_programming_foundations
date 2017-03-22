@@ -52,6 +52,7 @@ WINS_TO_WIN_THE_GAME = 5
 # 2: 'medium'
 # 3: 'impossible to win'
 SKILL_LEVEL = 3
+# ^ at level 3, program is very *slow* during the first moves
 
 # game mechanics
 
