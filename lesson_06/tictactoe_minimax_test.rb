@@ -1,3 +1,7 @@
+# testing minimax
+
+# game mechanics
+
 M1 = '1'; M2 = '2'; M3 = '3'
 M4 = '4'; M5 = '5'; M6 = '6'
 M7 = '7'; M8 = '8'; M9 = '9'
@@ -22,17 +26,15 @@ def update(board, move, player)
 end
 
 def winner?(board, player)
-  win_lines = [
-    [M1, M2, M3], [M4, M5, M6], [M7, M8, M9], # rows
-    [M1, M4, M7], [M2, M5, M8], [M3, M6, M9], # cols
-    [M1, M5, M9], [M3, M5, M7]                # diags
-  ]
-
-  win_lines.any? do |line|
-    line.all? do |move|
-      moves_so_far_of(player, board).include?(move)
-    end
-  end
+  win_strings = /
+    #{M1}#{M2}#{M3}.*|.*#{M4}#{M5}#{M6}.*|.*#{M7}#{M8}#{M9}|
+    #{M1}.*#{M4}.*#{M7}.*|.*#{M2}.*#{M5}.*#{M8}.*|.*#{M3}.*#{M6}.*#{M9}|
+    #{M1}.*#{M5}.*#{M9}|.*#{M3}.*#{M5}.*#{M7}.*
+  /x
+  # debug
+  # p moves_so_far_of(player, board).join
+  # p moves_so_far_of(player, board).join.match(win_strings)
+  !!moves_so_far_of(player, board).join.match(win_strings)
 end
 
 def moves_so_far_of(player, board)
@@ -50,50 +52,68 @@ def opponent_of(player)
   end
 end
 
-def best_moves(player, board)
-  available_moves(board).select do |move|
+# minimax methods
+
+def best_move(player, board)
+  move_options = []
+  resulting_board_scores = []
+
+  available_moves(board).each do |move|
     evaluation_board = board.clone
     update(evaluation_board, move, player)
-    value_of(evaluation_board, player, opponent_of(player)) == value_of(board, player, player)
+    move_options << move
+    resulting_board_scores << value_of(evaluation_board, player, opponent_of(player))
   end
+
+  max = resulting_board_scores.max
+  index = resulting_board_scores.index(max)
+  move_options[index]
 end
 
 def value_of(board, player, player_to_move)
   if winner?(board, player)
-    return 1
+    1
   elsif winner?(board, opponent_of(player))
-    return -1
+    -1
   elsif full?(board)
-    return 0
+    0
   else
     case player_to_move
     when opponent_of(player)
-      next_board_values =
-        next_boards(board, opponent_of(player)).map do |next_board|
-          value_of(next_board, player, player)
+      next_board_values = []
+        available_moves.each do |move|
+          update(board, move, player_to_move)
+          next_board_values << value_of(board, player, player)
+          undo(board, move)
         end
-      return next_board_values.min
+      next_board_values.min
     when player
-      next_board_values =
-        next_boards(board, player).map do |next_board|
-          value_of(next_board, player, opponent_of(player))
-        end
-      return next_board_values.max
+      next_board_values = []
+      available_moves.each do |move|
+        update(board, move, player_to_move)
+        next_board_values << value_of(board, player, opponent_of(player))
+        undo(board, move)
+      end
+      next_board_values.max
     end
   end
 end
 
-def next_boards(board, player)
-  next_boards = []
-  available_moves(board).each do |move|
-    evaluation_board = board.clone
-    update(evaluation_board, move, player)
-    next_boards << evaluation_board
-  end
-  next_boards
+def undo(move, board)
+  board[move] == false
 end
 
 # tests
+
+# does the new winner? method work?
+board = {
+  "1"=>:computer, "2"=>:computer, "3"=>:computer,
+  "4"=>:user, "5"=>:user, "6"=>false,
+  "7"=>false, "8"=>false, "9"=>false
+}
+
+p winner?(board, :computer)
+
 
 # FRESH BOARD
 board = initialize_board
@@ -107,8 +127,8 @@ board = {
   "7"=>false, "8"=>:user, "9"=>false
 }
 
-p value_of(board, :user, :user) # 1 that is correct.
-p best_moves(:user, board) # ["4", "6", "7", "9"] (correct, either way results in a win)
+# p value_of(board, :user, :user) # 1 that is correct.
+# p best_moves(:user, board) # ["4", "6", "7", "9"] (correct, either way results in a win)
 
 # "RIGGED" BOARD
 board = {

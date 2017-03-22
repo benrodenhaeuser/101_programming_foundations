@@ -16,8 +16,10 @@ FIRST_TO_MOVE = :computer
 WINS_TO_WIN_THE_GAME = 5
 
 # skill level of computer
-# 1: 'chooses at random', 2: 'takes into account immediate threats'
-SKILL_LEVEL = 3
+# 1: 'chooses at random',
+# 2: 'takes into account immediate threats and opportunities'
+# 3: 'uses minimax algorithm'
+SKILL_LEVEL = 2
 
 # game mechanics
 
@@ -58,68 +60,7 @@ def get_computer_move(board)
       available_moves(board).sample
     end
   when 3
-    if available_moves(board).include?(CENTER_MOVE)
-      CENTER_MOVE
-    else
-      best_moves(:computer, board).sample
-    end
-  end
-end
-
-def best_moves(player, board)
-  available_moves(board).select do |move|
-    evaluation_board = board.clone
-    update(evaluation_board, move, player)
-    value_of(evaluation_board, player, opponent_of(player)) ==
-      value_of(board, player, player)
-  end
-end
-
-def value_of(board, player, player_to_move)
-  if winner?(board, player)
-    1
-  elsif winner?(board, opponent_of(player))
-    -1
-  elsif full?(board)
-    0
-  else
-    case player_to_move
-    when opponent_of(player)
-      next_board_values =
-        next_boards(board, opponent_of(player)).map do |next_board|
-          value_of(next_board, player, player)
-        end
-      next_board_values.min
-    when player
-      next_board_values =
-        next_boards(board, player).map do |next_board|
-          value_of(next_board, player, opponent_of(player))
-        end
-      next_board_values.max
-    end
-  end
-end
-
-def next_boards(board, player)
-  next_boards = []
-  available_moves(board).each do |move|
-    evaluation_board = board.clone
-    update(evaluation_board, move, player)
-    next_boards << evaluation_board
-  end
-  next_boards
-end
-
-def threats_for(player, board)
-  MOVES.select { |move| threat_for?(player, move, board) }
-end
-
-def threat_for?(player, move, board)
-  if available_moves(board).include?(move)
-    evaluation_board = board.clone
-    update(evaluation_board, move, opponent_of(player))
-
-    winner?(evaluation_board, opponent_of(player))
+    best_move(:computer, board)
   end
 end
 
@@ -130,18 +71,17 @@ def update(board, move, player)
   end
 end
 
-def winner?(board, player)
-  win_lines = [
-    [M1, M2, M3], [M4, M5, M6], [M7, M8, M9], # rows
-    [M1, M4, M7], [M2, M5, M8], [M3, M6, M9], # cols
-    [M1, M5, M9], [M3, M5, M7]                # diags
-  ]
+def undo(move, board)
+  board[move] = false
+end
 
-  win_lines.any? do |line|
-    line.all? do |move|
-      moves_so_far_of(player, board).include?(move)
-    end
-  end
+def winner?(board, player)
+  win_strings = /
+    #{M1}#{M2}#{M3}.*|.*#{M4}#{M5}#{M6}.*|.*#{M7}#{M8}#{M9}|
+    #{M1}.*#{M4}.*#{M7}.*|.*#{M2}.*#{M5}.*#{M8}.*|.*#{M3}.*#{M6}.*#{M9}|
+    #{M1}.*#{M5}.*#{M9}|.*#{M3}.*#{M5}.*#{M7}.*
+  /x
+  !!moves_so_far_of(player, board).join.match(win_strings)
 end
 
 def moves_so_far_of(player, board)
@@ -156,6 +96,68 @@ def opponent_of(player)
   case player
   when :computer then :user
   when :user then :computer
+  end
+end
+
+# computer skills at level 3
+
+def best_move(player, board)
+  move_options = []
+  resulting_board_scores = []
+
+  available_moves(board).each do |move|
+    evaluation_board = board.clone
+    update(evaluation_board, move, player)
+    move_options << move
+    resulting_board_scores << value_of(evaluation_board, player, opponent_of(player))
+  end
+
+  max = resulting_board_scores.max
+  index = resulting_board_scores.index(max)
+  move_options[index]
+end
+
+def value_of(board, player, player_to_move)
+  if winner?(board, player)
+    1
+  elsif winner?(board, opponent_of(player))
+    -1
+  elsif full?(board)
+    0
+  else
+    case player_to_move
+    when opponent_of(player)
+      next_board_values = []
+        available_moves(board).each do |move|
+          update(board, move, player_to_move)
+          next_board_values << value_of(board, player, player)
+          undo(move, board)
+        end
+      next_board_values.min
+    when player
+      next_board_values = []
+      available_moves(board).each do |move|
+        update(board, move, player_to_move)
+        next_board_values << value_of(board, player, opponent_of(player))
+        undo(move, board)
+      end
+      next_board_values.max
+    end
+  end
+end
+
+# computer skills at level 2
+
+def threats_for(player, board)
+  MOVES.select { |move| threat_for?(player, move, board) }
+end
+
+def threat_for?(player, move, board)
+  if available_moves(board).include?(move)
+    update(board, move, opponent_of(player))
+    result = winner?(board, opponent_of(player))
+    undo(move, board)
+    result
   end
 end
 
