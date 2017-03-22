@@ -5,7 +5,7 @@
 require 'yaml'
 
 messages =
-"welcome: Welcome to Tic Tac Toe!
+  "welcome: Welcome to Tic Tac Toe!
 explain_board: |
   In the game board, your pieces will be
      represented with 'O's, and Computer's pieces
@@ -15,9 +15,9 @@ explain_moves: |
      %{m1} (top left)    | %{m2} (top middle)    | %{m3} (top right)
      %{m4} (middle left) | %{m5} (middle middle) | %{m6} (middle right)
      %{m7} (bottom left) | %{m8} (bottom middle) | %{m9} (bottom right)
-explain_winning_conditions: The first player to win %{rounds} rounds wins the game.
+explain_win: The first player to win %{rounds} rounds wins the game.
 please_press_enter: Please press enter to continue.
-want_to_have_first_turn?: Would you like to be the first player to move? (Y/N)
+want_to_have_first_turn?: Would you like to be the first to move? (Y/N)
 bye: Good-Bye!
 request_move: Please make your choice – %{moves}.
 invalid_choice: This is not an available choice.
@@ -28,7 +28,7 @@ computer_chose: Computer chose %{move}.
 computer_wins: The computer won.
 user_wins: You won.
 its_a_tie: This round is a tie.
-the current_scores_are: You have won %{user_score} rounds so far, computer has won %{computer_score}.
+scores_are: You have won %{user} rounds, computer has won %{computer}.
 the_overall_winner_is: We have an overall winner. It's %{winner}.
 another_game?: Would you like to play again? (Y/N)"
 
@@ -98,20 +98,24 @@ def undo(move, board)
   board[move] = false
 end
 
-def winner?(board, player)
-  win_strings = /
-    #{M1}#{M2}#{M3}.*|.*#{M4}#{M5}#{M6}.*|.*#{M7}#{M8}#{M9}|
-    #{M1}.*#{M4}.*#{M7}.*|.*#{M2}.*#{M5}.*#{M8}.*|.*#{M3}.*#{M6}.*#{M9}|
-    #{M1}.*#{M5}.*#{M9}|.*#{M3}.*#{M5}.*#{M7}.*
-  /x
-  !!moves_so_far_of(player, board).join.match(win_strings)
-end
-
 def opponent_of(player)
   case player
   when :computer then :user
   when :user then :computer
   end
+end
+
+def winner?(board, player)
+  win_strings = %r{
+    #{M1}#{M2}#{M3}.*|.*#{M4}#{M5}#{M6}.*|.*#{M7}#{M8}#{M9}|
+    #{M1}.*#{M4}.*#{M7}.*|.*#{M2}.*#{M5}.*#{M8}.*|.*#{M3}.*#{M6}.*#{M9}|
+    #{M1}.*#{M5}.*#{M9}|.*#{M3}.*#{M5}.*#{M7}.*
+  }x
+  !!moves_so_far_of(player, board).join.match(win_strings)
+end
+
+def done?(board)
+  winner?(board, :computer) || winner?(board, :user) || full?(board)
 end
 
 # computer moves
@@ -121,19 +125,19 @@ def get_computer_move(board)
 
   case SKILL_LEVEL
   when 1
-    get_level_one_move(board)
+    get_random_move(board)
   when 2
-    get_level_two_move(board)
+    get_decent_move(board)
   when 3
-    get_level_three_move(board)
+    get_unbeatable_move(board)
   end
 end
 
-def get_level_one_move(board)
+def get_random_move(board)
   available_moves(board).sample
 end
 
-def get_level_two_move(board)
+def get_decent_move(board)
   if threats_for(:user, board) != []
     threats_for(:user, board).sample
   elsif threats_for(:computer, board) != []
@@ -142,14 +146,6 @@ def get_level_two_move(board)
     CENTER_MOVE
   else
     available_moves(board).sample
-  end
-end
-
-def get_level_three_move(board)
-  if empty?(board)
-    available_moves(board).sample
-  else
-    evaluate(board, :computer, :computer)[:best_moves].sample
   end
 end
 
@@ -166,47 +162,45 @@ def threat_for?(player, move, board)
   end
 end
 
-def evaluate(board, player, player_to_move)
-  evaluation = { value_of_position: nil, best_moves: [] }
+def get_unbeatable_move(board)
+  negamax(board, :computer)[:best_moves].sample
+end
 
-  if winner?(board, player)
-    evaluation[:value_of_position] = 1
-  elsif winner?(board, opponent_of(player))
-    evaluation[:value_of_position] = -1
-  elsif full?(board)
-    evaluation[:value_of_position] = 0
+def negamax(board, player)
+  evaluation = { value_of_board: nil, best_moves: [] }
+
+  if done?(board)
+    evaluation[:value_of_board] = result_for(player, board)
   else
-    moves_scores = []
-
-    case player_to_move
-    when opponent_of(player)
-      available_moves(board).each do |move|
-        update(board, move, player_to_move)
-        moves_scores << evaluate(board, player, player)[:value_of_position]
-        undo(move, board)
-      end
-      evaluation[:value_of_position] = moves_scores.min
-      available_moves(board).each_with_index do |move, index|
-        if moves_scores[index] == evaluation[:value_of_position]
-          evaluation[:best_moves] << move
-        end
-      end
-    when player
-      available_moves(board).each do |move|
-        update(board, move, player_to_move)
-        moves_scores << evaluate(board, player, opponent_of(player))[:value_of_position]
-        undo(move, board)
-      end
-      evaluation[:value_of_position] = moves_scores.max
-      available_moves(board).each_with_index do |move, index|
-        if moves_scores[index] == evaluation[:value_of_position]
-          evaluation[:best_moves] << move
-        end
-      end
-    end
+    evaluate(board, player, evaluation)
   end
 
   evaluation
+end
+
+def result_for(player, board)
+  if winner?(board, player)
+    1
+  elsif winner?(board, opponent_of(player))
+    -1
+  elsif full?(board)
+    0
+  end
+end
+
+def evaluate(board, player, evaluation)
+  scores_for_moves = []
+  available_moves(board).each do |move|
+    update(board, move, player)
+    scores_for_moves << -negamax(board, opponent_of(player))[:value_of_board]
+    undo(move, board)
+  end
+  evaluation[:value_of_board] = scores_for_moves.max
+  available_moves(board).each_with_index do |move, index|
+    if scores_for_moves[index] == evaluation[:value_of_board]
+      evaluation[:best_moves] << move
+    end
+  end
 end
 
 # user interface
@@ -222,10 +216,12 @@ def welcome_the_user
   prompt(
     'explain_moves',
     {
-      m1: M1, m2: M2, m3: M3, m4: M4, m5: M5, m6: M6, m7: M7, m8: M8, m9: M9
+      m1: M1, m2: M2, m3: M3,
+      m4: M4, m5: M5, m6: M6,
+      m7: M7, m8: M8, m9: M9
     }
   )
-  prompt('explain_winning_conditions', { rounds: WINS_TO_WIN_THE_GAME })
+  prompt('explain_win', { rounds: WINS_TO_WIN_THE_GAME })
 end
 
 def wait_for_user
@@ -257,10 +253,10 @@ end
 
 def present(scores)
   prompt(
-    'the current_scores_are',
+    'scores_are',
     {
-      user_score: scores[:user],
-      computer_score: scores[:computer]
+      user: scores[:user],
+      computer: scores[:computer]
     }
   )
 end

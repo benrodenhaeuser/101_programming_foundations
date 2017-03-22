@@ -239,3 +239,49 @@ board = {
 # p value_of(board, :user, :computer) # -1 ==> correct
 # p value_of(board, :user, :computer) # -1 ==> correct
 # p best_moves(:computer, board) #
+
+
+# COMPLICATED EVALUATE METHOD WITH "SYMMETRY"
+
+# def evaluate(board, player, player_to_move)
+#   evaluation = { value_of_position: nil, best_moves: [] }
+#
+#   if winner?(board, player)
+#     evaluation[:value_of_position] = 1
+#   elsif winner?(board, opponent_of(player))
+#     evaluation[:value_of_position] = -1
+#   elsif full?(board)
+#     evaluation[:value_of_position] = 0
+#   else
+#     moves_scores = []
+#
+#     case player_to_move
+#     when opponent_of(player)
+#       available_moves(board).each do |move|
+#         update(board, move, player_to_move)
+#         moves_scores << evaluate(board, player, player)[:value_of_position]
+#         undo(move, board)
+#       end
+#       evaluation[:value_of_position] = moves_scores.min
+#       available_moves(board).each_with_index do |move, index|
+#         if moves_scores[index] == evaluation[:value_of_position]
+#           evaluation[:best_moves] << move
+#         end
+#       end
+#     when player
+#       available_moves(board).each do |move|
+#         update(board, move, player_to_move)
+#         moves_scores << evaluate(board, player, opponent_of(player))[:value_of_position]
+#         undo(move, board)
+#       end
+#       evaluation[:value_of_position] = moves_scores.max
+#       available_moves(board).each_with_index do |move, index|
+#         if moves_scores[index] == evaluation[:value_of_position]
+#           evaluation[:best_moves] << move
+#         end
+#       end
+#     end
+#   end
+#
+#   evaluation
+# end
