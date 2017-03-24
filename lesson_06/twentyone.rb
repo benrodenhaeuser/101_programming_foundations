@@ -2,7 +2,7 @@
 
 # CONFIGURATION
 
-NUMBER_OF_ROUNDS_TO_WIN = 2
+NUMBER_OF_ROUND_WINS_TO_WIN = 5
 DEALER_STAY_VALUE = 17
 BUST_VALUE = 21
 
@@ -16,26 +16,27 @@ please_press_enter: 'Press enter to continue. '
 hit_or_stay?: 'Do you want to hit (H) or stay (S)? '
 invalid_choice: This is not a valid choice.
 players_hand: 'You have: %{player}.'
-dealers_partial_hand: 'Dealer has: %{dealer}, and one more card.'
+dealers_first_card: 'Dealer has: %{dealer}, and one more card.'
 dealers_full_hand: 'Dealer has: %{dealer}.'
 players_hands_value_is: 'Your hand is worth %{player}.'
 dealers_hands_value_is: 'The hand of dealer is worth %{dealer}.'
 dealer_wins: Dealer wins.
 player_wins: You win.
 its_a_tie: The game is tied.
-dealing_flash: ... dealing ...
-revealing_flash: ... revealing results ...
-player_busted_flash: ... you busted! ...
-dealer_busted_flash: ... Dealer busted! ...
-player_hitting_flash: ... you are hitting ...
-dealer_hitting_flash: ... Dealer is hitting ...
+dealing: ... dealing ...
+revealing: ... revealing results ...
+player_busting: ... you busted! ...
+dealer_busting: ... Dealer busted! ...
+player_hitting: ... you are hitting ...
+dealer_hitting: ... Dealer is hitting ...
 player_busted: You busted!
 dealer_busted: Dealer busted!
 current_scores_are: Dealer has %{dealer} points, you have %{player} points.
-overall_winner_is: The overall winner is %{winner}.
+overall_winner_is: We have an overall winner. It's %{winner}.
 dividing_line: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 empty_line: ''
-another_game?: 'Would you like to play again? (Y/N) '"
+another_game?: 'Would you like to play again? (Y/N) '
+bye: Good-Bye!"
 
 MESSAGES = YAML.load(messages)
 
@@ -68,30 +69,29 @@ CARDS = cards
 
 def initialize_game
   game = {
-    deck: nil,
+    deck: CARDS.shuffle,
     player: [],
     dealer: [],
     winner: nil
   }
 
-  game[:deck] = CARDS.shuffle
   deal_card(:player, game, 2)
   deal_card(:dealer, game, 2)
 
   game
 end
 
-def deal_card(person, game, number_of_cards = 1)
+def deal_card(hand, game, number_of_cards = 1)
   number_of_cards.times do |_|
-    game[person] << game[:deck].pop
+    game[hand] << game[:deck].pop
   end
 end
 
-def hit(person, game)
-  deal_card(person, game)
+def hit(hand, game)
+  deal_card(hand, game)
 end
 
-def determine_winner(game)
+def update_with_winner(game)
   if busted?(:player, game)
     game[:winner] = :dealer
   elsif busted?(:dealer, game)
@@ -103,27 +103,27 @@ def determine_winner(game)
   end
 end
 
-def busted?(person, game)
-  value_of(person, game) > BUST_VALUE
+def busted?(hand, game)
+  value_of(hand, game) > BUST_VALUE
 end
 
-def value_of(person, game)
-  if raw_sum(person, game) <= BUST_VALUE
-    raw_sum(person, game)
+def value_of(hand, game)
+  if raw_sum(hand, game) <= BUST_VALUE
+    raw_sum(hand, game)
   else
-    raw_sum(person, game) - number_of_aces(person, game) * 10
+    raw_sum(hand, game) - number_of_aces(hand, game) * 10
   end
 end
 
-def raw_sum(person, game)
+def raw_sum(hand, game)
   raw_sum = 0
-  game[person].each { |card| raw_sum += card[:raw_value] }
+  game[hand].each { |card| raw_sum += card[:raw_value] }
   raw_sum
 end
 
-def number_of_aces(person, game)
+def number_of_aces(hand, game)
   number_of_aces = 0
-  game[person].each do |card|
+  game[hand].each do |card|
     if card[:name] == 'ace'
       number_of_aces += 1
     end
@@ -143,22 +143,28 @@ def update(scores, game)
 end
 
 def overall_winner?(scores)
-  scores[:player] == NUMBER_OF_ROUNDS_TO_WIN ||
-    scores[:dealer] == NUMBER_OF_ROUNDS_TO_WIN
+  scores[:player] == NUMBER_OF_ROUND_WINS_TO_WIN ||
+    scores[:dealer] == NUMBER_OF_ROUND_WINS_TO_WIN
 end
 
 # USER INTERFACE
 
-def prompt(message, subst = {}, promptsign = '  ', linebreak = true)
+def prompt(message, subst = {}, promptsymbol = '  ', linebreak = true)
   message = MESSAGES[message] % subst
-  output = "#{promptsign} #{message}"
+  output = "#{promptsymbol} #{message}"
 
   if linebreak
     puts output
   else
     print output
   end
+end
 
+def news_flash(news)
+  system 'clear'
+  prompt(news)
+  sleep 0.4
+  system 'clear'
 end
 
 def wait_for_user
@@ -166,34 +172,21 @@ def wait_for_user
   gets
 end
 
-def news_flash(news)
-  system 'clear'
-  case news
-  when :dealing then prompt('dealing_flash')
-  when :player_hitting then prompt('player_hitting_flash')
-  when :dealer_hitting then prompt('dealer_hitting_flash')
-  when :player_busted then prompt('player_busted_flash')
-  when :dealer_busted then prompt ('dealer_busted_flash')
-  when :revealing then prompt('revealing_flash')
-  end
-  sleep 0.4
-  system 'clear'
-end
-
 def display_hands(game, transparency)
-  players_hand = joinand(get_full_card_names(:player, game))
+  players_hand = joinand(get_card_list(:player, game))
   prompt('players_hand', { player: players_hand })
 
   case transparency
   when :partial
-    dealers_first_card = get_full_card_names(:dealer, game).first
-    prompt('dealers_partial_hand', { dealer: dealers_first_card })
+    dealers_first_card = get_card_list(:dealer, game).first
+    prompt('dealers_first_card', { dealer: dealers_first_card })
   when :full
-    dealers_hand = joinand(get_full_card_names(:dealer, game))
-    prompt('dealers_full_hand', { dealer: dealers_hand })
+    dealers_full_hand = joinand(get_card_list(:dealer, game))
+    prompt('dealers_full_hand', { dealer: dealers_full_hand })
   end
 
   prompt('dividing_line', {})
+
   show_values(game, transparency)
 end
 
@@ -207,61 +200,12 @@ def show_values(game, transparency)
   prompt('dividing_line')
 end
 
-def get_full_card_names(person, game)
+def get_card_list(hand, game)
   names = []
-  game[person].each do |card|
+  game[hand].each do |card|
     names << "#{card[:suit]} #{card[:name].capitalize}"
   end
   names
-end
-
-def display_winner(game)
-  if busted?(:dealer, game)
-    prompt('dealer_busted', {}, '  ', true)
-  elsif busted?(:player, game)
-    prompt('player_busted', {}, '  ', true)
-  end
-
-  if game[:winner] == :dealer
-    prompt('dealer_wins', {}, '  ', true)
-  elsif game[:winner] == :player
-    prompt('player_wins', {}, '  ', true)
-  else
-    prompt('its_a_tie', {}, '  ', true)
-  end
-
-  prompt('dividing_line')
-end
-
-def display_scores(scores)
-  prompt(
-    'current_scores_are',
-    {
-      player: scores[:player],
-      dealer: scores[:dealer]
-    },
-    '  ',
-    true
-  )
-
-  prompt('empty_line', {}, '')
-end
-
-def display_overall_winner(scores)
-  if scores[:player] == NUMBER_OF_ROUNDS_TO_WIN
-    overall_winner = 'you'
-  elsif scores[:dealer] == NUMBER_OF_ROUNDS_TO_WIN
-    overall_winner = 'Dealer'
-  end
-
-  prompt(
-    'overall_winner_is',
-    {
-      winner: overall_winner
-    }
-  )
-
-  prompt('empty_line', {}, '')
 end
 
 def joinand(array)
@@ -273,6 +217,53 @@ def joinand(array)
     array[-1] = "and #{array.last}"
     array.join(', ')
   end
+end
+
+def display_winner(game)
+  if busted?(:dealer, game)
+    prompt('dealer_busted')
+  elsif busted?(:player, game)
+    prompt('player_busted')
+  end
+
+  if game[:winner] == :dealer
+    prompt('dealer_wins')
+  elsif game[:winner] == :player
+    prompt('player_wins')
+  else
+    prompt('its_a_tie')
+  end
+
+  prompt('dividing_line')
+end
+
+def display_scores(scores)
+  prompt(
+    'current_scores_are',
+    {
+      player: scores[:player],
+      dealer: scores[:dealer]
+    }
+  )
+
+  prompt('empty_line', {}, '')
+end
+
+def display_overall_winner(scores)
+  if scores[:player] == NUMBER_OF_ROUND_WINS_TO_WIN
+    overall_winner = 'you'
+  elsif scores[:dealer] == NUMBER_OF_ROUND_WINS_TO_WIN
+    overall_winner = 'Dealer'
+  end
+
+  prompt(
+    'overall_winner_is',
+    {
+      winner: overall_winner
+    }
+  )
+
+  prompt('empty_line')
 end
 
 def user_wants_to_play_again?
@@ -302,7 +293,7 @@ loop do
   # round loop
   loop do
     game = initialize_game
-    news_flash(:dealing)
+    news_flash('dealing')
     display_hands(game, :partial)
 
     # player turn
@@ -313,11 +304,11 @@ loop do
       when 'S' then break
       when 'H'
         hit(:player, game)
-        news_flash(:player_hitting)
-        break news_flash(:player_busted) if busted?(:player, game)
+        news_flash('player_hitting')
+        break news_flash('player_busting') if busted?(:player, game)
         display_hands(game, :partial)
       else
-      prompt('invalid_choice')
+        prompt('invalid_choice')
       end
     end
 
@@ -326,15 +317,15 @@ loop do
       loop do
         break if value_of(:dealer, game) >= DEALER_STAY_VALUE
         hit(:dealer, game)
-        news_flash(:dealer_hitting)
-        break news_flash(:dealer_busted) if busted?(:dealer, game)
+        news_flash('dealer_hitting')
+        break news_flash('dealer_busting') if busted?(:dealer, game)
       end
     end
 
     # evaluation
-    determine_winner(game)
+    update_with_winner(game)
     update(scores, game)
-    news_flash(:revealing)
+    news_flash('revealing')
     display_hands(game, :full)
     display_winner(game)
     display_scores(scores)
@@ -343,5 +334,5 @@ loop do
     wait_for_user
   end
 
-  break unless user_wants_to_play_again?
+  break prompt('bye') unless user_wants_to_play_again?
 end
