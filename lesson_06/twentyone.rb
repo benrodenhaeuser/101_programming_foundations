@@ -1,5 +1,11 @@
 # twenty-one
 
+# CONFIGURATION
+
+NUMBER_OF_ROUNDS_TO_WIN = 2
+DEALER_STAY_VALUE = 17
+BUST_VALUE = 21
+
 # USER MESSAGES
 
 require 'yaml'
@@ -41,7 +47,7 @@ hearts = "\u2665".encode('utf-8')
 diamonds = "\u2666".encode('utf-8')
 suits = [spades, clubs, hearts, diamonds]
 numbers = (2..10)
-faces = ['jack', 'king', 'queen', 'king']
+faces = ['jack', 'queen', 'king']
 
 cards = []
 suits.each do |suit|
@@ -81,8 +87,8 @@ def deal_card(person, game, number_of_cards = 1)
   end
 end
 
-def initialize_game_scores
-  { player: 0, dealer: 0 }
+def hit(person, game)
+  deal_card(person, game)
 end
 
 def determine_winner(game)
@@ -97,16 +103,12 @@ def determine_winner(game)
   end
 end
 
-def hit(person, game)
-  deal_card(person, game)
-end
-
 def busted?(person, game)
-  value_of(person, game) > 21
+  value_of(person, game) > BUST_VALUE
 end
 
 def value_of(person, game)
-  if raw_sum(person, game) <= 21
+  if raw_sum(person, game) <= BUST_VALUE
     raw_sum(person, game)
   else
     raw_sum(person, game) - number_of_aces(person, game) * 10
@@ -129,6 +131,10 @@ def number_of_aces(person, game)
   number_of_aces
 end
 
+def initialize_game_scores
+  { player: 0, dealer: 0 }
+end
+
 def update(scores, game)
   case game[:winner]
   when :dealer then scores[:dealer] += 1
@@ -137,7 +143,8 @@ def update(scores, game)
 end
 
 def overall_winner?(scores)
-  scores[:player] == 5 || scores[:dealer] == 5
+  scores[:player] == NUMBER_OF_ROUNDS_TO_WIN ||
+    scores[:dealer] == NUMBER_OF_ROUNDS_TO_WIN
 end
 
 # USER INTERFACE
@@ -241,9 +248,9 @@ def display_scores(scores)
 end
 
 def display_overall_winner(scores)
-  if scores[:player] == 5
+  if scores[:player] == NUMBER_OF_ROUNDS_TO_WIN
     overall_winner = 'you'
-  elsif scores[:dealer] == 5
+  elsif scores[:dealer] == NUMBER_OF_ROUNDS_TO_WIN
     overall_winner = 'Dealer'
   end
 
@@ -309,14 +316,15 @@ loop do
         news_flash(:player_hitting)
         break news_flash(:player_busted) if busted?(:player, game)
         display_hands(game, :partial)
-      end
+      else
       prompt('invalid_choice')
+      end
     end
 
     # dealer turn
     unless busted?(:player, game)
       loop do
-        break if value_of(:dealer, game) >= 17
+        break if value_of(:dealer, game) >= DEALER_STAY_VALUE
         hit(:dealer, game)
         news_flash(:dealer_hitting)
         break news_flash(:dealer_busted) if busted?(:dealer, game)
