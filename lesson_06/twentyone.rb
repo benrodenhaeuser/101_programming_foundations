@@ -33,7 +33,7 @@ player_busted: You busted!
 dealer_busted: Dealer busted!
 current_scores_are: Dealer has %{dealer} points, you have %{player} points.
 overall_winner_is: The overall winner is %{winner}.
-dividing_line: ------------------------------------------------------------
+dividing_line: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 empty_line: ''
 another_game?: 'Would you like to play again? (Y/N) '"
 
@@ -149,18 +149,20 @@ end
 
 # USER INTERFACE
 
-def prompt(message, subst = {}, promptsign = '  ', style = :puts)
+def prompt(message, subst = {}, promptsign = '  ', linebreak = true)
   message = MESSAGES[message] % subst
   output = "#{promptsign} #{message}"
 
-  case style
-  when :puts then puts output
-  when :print then print output
+  if linebreak
+    puts output
+  else
+    print output
   end
+
 end
 
 def wait_for_user
-  prompt('please_press_enter', {}, '=>', :print)
+  prompt('please_press_enter', {}, '=>', false)
   gets
 end
 
@@ -178,28 +180,31 @@ def news_flash(news)
   system 'clear'
 end
 
-def display_results(game)
-  system 'clear'
-  display_hands(game, :reveal)
-  display_values(game)
-  display_winner(game)
-end
-
-def display_hands(game, status)
+def display_hands(game, transparency)
   players_hand = joinand(get_full_card_names(:player, game))
-  dealers_hand = joinand(get_full_card_names(:dealer, game))
-  dealers_first_card = get_full_card_names(:dealer, game).first
-
   prompt('players_hand', { player: players_hand })
 
-  case status
+  case transparency
   when :partial
+    dealers_first_card = get_full_card_names(:dealer, game).first
     prompt('dealers_partial_hand', { dealer: dealers_first_card })
-  when :reveal
+  when :full
+    dealers_hand = joinand(get_full_card_names(:dealer, game))
     prompt('dealers_full_hand', { dealer: dealers_hand })
   end
 
   prompt('dividing_line', {})
+  show_values(game, transparency)
+end
+
+def show_values(game, transparency)
+  prompt('players_hands_value_is', { player: value_of(:player, game) })
+
+  if transparency == :full
+    prompt('dealers_hands_value_is', { dealer: value_of(:dealer, game) })
+  end
+
+  prompt('dividing_line')
 end
 
 def get_full_card_names(person, game)
@@ -210,27 +215,22 @@ def get_full_card_names(person, game)
   names
 end
 
-def display_values(game)
-  prompt('players_hands_value_is', { player: value_of(:player, game) })
-  prompt('dealers_hands_value_is', { dealer: value_of(:dealer, game) })
-
+def display_winner(game)
   if busted?(:dealer, game)
-    prompt('dealer_busted')
+    prompt('dealer_busted', {}, '  ', true)
   elsif busted?(:player, game)
-    prompt('player_busted')
+    prompt('player_busted', {}, '  ', true)
+  end
+
+  if game[:winner] == :dealer
+    prompt('dealer_wins', {}, '  ', true)
+  elsif game[:winner] == :player
+    prompt('player_wins', {}, '  ', true)
+  else
+    prompt('its_a_tie', {}, '  ', true)
   end
 
   prompt('dividing_line')
-end
-
-def display_winner(game)
-  if game[:winner] == :dealer
-    prompt('dealer_wins', {}, '  ', :print)
-  elsif game[:winner] == :player
-    prompt('player_wins', {}, '  ', :print)
-  else
-    prompt('its_a_tie', {}, '  ', :print)
-  end
 end
 
 def display_scores(scores)
@@ -240,8 +240,8 @@ def display_scores(scores)
       player: scores[:player],
       dealer: scores[:dealer]
     },
-    '',
-    :puts
+    '  ',
+    true
   )
 
   prompt('empty_line', {}, '')
@@ -277,7 +277,7 @@ end
 
 def user_wants_to_play_again?
   loop do
-    prompt('another_game?', {}, '=>', :print)
+    prompt('another_game?', {}, '=>', false)
     answer = gets.chomp
     if answer.upcase == 'Y'
       break true
@@ -295,7 +295,7 @@ system 'clear'
 prompt('welcome')
 wait_for_user
 
-# game loop
+# main loop
 loop do
   scores = initialize_game_scores
 
@@ -307,7 +307,7 @@ loop do
 
     # player turn
     loop do
-      prompt('hit_or_stay?', {}, '=>', :print)
+      prompt('hit_or_stay?', {}, '=>', false)
       decision = gets.chomp
       case decision.upcase
       when 'S' then break
@@ -331,11 +331,12 @@ loop do
       end
     end
 
-    # evaluation + display
+    # evaluation
     determine_winner(game)
     update(scores, game)
     news_flash(:revealing)
-    display_results(game)
+    display_hands(game, :full)
+    display_winner(game)
     display_scores(scores)
 
     break display_overall_winner(scores) if overall_winner?(scores)
