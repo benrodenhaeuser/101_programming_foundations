@@ -179,16 +179,6 @@ def negamax(board, player)
   evaluation
 end
 
-def result_for(player, board)
-  if winner?(board, player)
-    1
-  elsif winner?(board, opponent_of(player))
-    -1
-  elsif full?(board)
-    0
-  end
-end
-
 def evaluate(board, player, evaluation)
   scores_for_moves = []
   available_moves(board).each do |move|
@@ -201,6 +191,16 @@ def evaluate(board, player, evaluation)
     if scores_for_moves[index] == evaluation[:value_of_board]
       evaluation[:best_moves] << move
     end
+  end
+end
+
+def result_for(player, board)
+  if winner?(board, player)
+    1
+  elsif winner?(board, opponent_of(player))
+    -1
+  elsif full?(board)
+    0
   end
 end
 
