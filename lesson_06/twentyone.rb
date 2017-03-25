@@ -110,7 +110,7 @@ end
 
 def value_of_hand(person, game)
   value = raw_sum_of_hand(person, game)
-  number_of_aces(person, game).times { value - 10 if value > BUST }
+  number_of_aces(person, game).times { value -= 10 if value > BUST }
   value
 end
 
