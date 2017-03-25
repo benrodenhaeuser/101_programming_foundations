@@ -38,32 +38,29 @@ MESSAGES = {
 }
 
 # CARD STOCK
+
 def build_card_stock
-  spades = "\u2660".encode('utf-8')
-  clubs = "\u2663".encode('utf-8')
-  hearts = "\u2665".encode('utf-8')
-  diamonds = "\u2666".encode('utf-8')
-  suits = [spades, clubs, hearts, diamonds]
-  numbers = (2..10)
-  faces = ['jack', 'queen', 'king']
+  suits = [
+    "\u2660".encode('utf-8'), "\u2663".encode('utf-8'), # spades, clubs
+    "\u2665".encode('utf-8'), "\u2666".encode('utf-8')  # hearts, diamonds
+  ]
 
   cards = []
   suits.each do |suit|
-    numbers.each do |value|
+    (2..10).each do |value|
       cards << { name: value.to_s, suit: suit, raw_value: value }
     end
 
-    faces.each do |face|
+    ['jack', 'queen', 'king'].each do |face|
       cards << { name: face, suit: suit, raw_value: 10 }
     end
 
     cards << { name: 'ace', suit: suit, raw_value: 11 }
   end
-
   cards
 end
 
-CARDS = built_card_stock
+CARDS = build_card_stock
 
 # GAME LOOP
 
@@ -73,13 +70,14 @@ def start
   wait_for_user
 
   loop do
-    scores = initialize_game_scores
-    play_game(scores)
+    play_game
     break prompt('bye') unless user_wants_to_play_again?
   end
 end
 
-def play_game(scores)
+def play_game
+  scores = initialize_game_scores
+
   loop do
     game = initialize_game
     news_flash('dealing')
