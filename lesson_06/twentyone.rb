@@ -38,31 +38,116 @@ MESSAGES = {
 }
 
 # CARD STOCK
+def build_card_stock
+  spades = "\u2660".encode('utf-8')
+  clubs = "\u2663".encode('utf-8')
+  hearts = "\u2665".encode('utf-8')
+  diamonds = "\u2666".encode('utf-8')
+  suits = [spades, clubs, hearts, diamonds]
+  numbers = (2..10)
+  faces = ['jack', 'queen', 'king']
 
-spades = "\u2660".encode('utf-8')
-clubs = "\u2663".encode('utf-8')
-hearts = "\u2665".encode('utf-8')
-diamonds = "\u2666".encode('utf-8')
-suits = [spades, clubs, hearts, diamonds]
-numbers = (2..10)
-faces = ['jack', 'queen', 'king']
+  cards = []
+  suits.each do |suit|
+    numbers.each do |value|
+      cards << { name: value.to_s, suit: suit, raw_value: value }
+    end
 
-cards = []
-suits.each do |suit|
-  numbers.each do |value|
-    cards << { name: value.to_s, suit: suit, raw_value: value }
+    faces.each do |face|
+      cards << { name: face, suit: suit, raw_value: 10 }
+    end
+
+    cards << { name: 'ace', suit: suit, raw_value: 11 }
   end
 
-  faces.each do |face|
-    cards << { name: face, suit: suit, raw_value: 10 }
-  end
-
-  cards << { name: 'ace', suit: suit, raw_value: 11 }
+  cards
 end
 
-CARDS = cards
+CARDS = built_card_stock
 
-# GAME MECHANICS
+# GAME LOOP
+
+def start
+  system 'clear'
+  prompt('welcome')
+  wait_for_user
+
+  loop do
+    scores = initialize_game_scores
+    play_game(scores)
+    break prompt('bye') unless user_wants_to_play_again?
+  end
+end
+
+def play_game(scores)
+  loop do
+    game = initialize_game
+    news_flash('dealing')
+    display_hands(game, :partial)
+
+    player_turn(game)
+    dealer_turn(game)
+    evaluate_game(game, scores)
+
+    if overall_winner?(scores)
+      break display_overall_winner(scores)
+    else
+      wait_for_user
+    end
+  end
+end
+
+def player_turn(game)
+  loop do
+    decision = hit_or_stay
+    case decision
+    when 'S' then break
+    when 'H'
+      hit(:player, game)
+      news_flash('player_hitting')
+      break news_flash('player_busting') if busted?(:player, game)
+      display_hands(game, :partial)
+    else
+      prompt('invalid_choice')
+    end
+  end
+end
+
+def dealer_turn(game)
+  unless busted?(:player, game)
+    loop do
+      break if value_of_hand(:dealer, game) >= DEALER_STAY
+      hit(:dealer, game)
+      news_flash('dealer_hitting')
+      break news_flash('dealer_busting') if busted?(:dealer, game)
+    end
+  end
+end
+
+def evaluate_game(game, scores)
+  set_winner(game, determine_winner(game))
+  update_scores(scores, game)
+  news_flash('revealing')
+  display_hands(game, :full)
+  display_winner(game)
+  display_scores(scores)
+end
+
+def user_wants_to_play_again?
+  loop do
+    prompt('another_game?', prompt_symbol: '=>', line_break: false)
+    answer = gets.chomp
+    if answer.upcase == 'Y'
+      break true
+    elsif answer.upcase == 'N'
+      break false
+    else
+      prompt('invalid_choice')
+    end
+  end
+end
+
+# INTERNAL GAME MECHANICS
 
 def initialize_game
   game = {
@@ -256,72 +341,6 @@ def display_overall_winner(scores)
   prompt('empty_line')
 end
 
-def user_wants_to_play_again?
-  loop do
-    prompt('another_game?', prompt_symbol: '=>', line_break: false)
-    answer = gets.chomp
-    if answer.upcase == 'Y'
-      break true
-    elsif answer.upcase == 'N'
-      break false
-    else
-      prompt('invalid_choice')
-    end
-  end
-end
+# KICK IT OFF ...
 
-# THE GAME
-
-system 'clear'
-prompt('welcome')
-wait_for_user
-
-# main loop
-loop do
-  scores = initialize_game_scores
-
-  # round loop
-  loop do
-    game = initialize_game
-    news_flash('dealing')
-    display_hands(game, :partial)
-
-    # player turn
-    loop do
-      decision = hit_or_stay
-      case decision
-      when 'S' then break
-      when 'H'
-        hit(:player, game)
-        news_flash('player_hitting')
-        break news_flash('player_busting') if busted?(:player, game)
-        display_hands(game, :partial)
-      else
-        prompt('invalid_choice')
-      end
-    end
-
-    # dealer turn
-    unless busted?(:player, game)
-      loop do
-        break if value_of_hand(:dealer, game) >= DEALER_STAY
-        hit(:dealer, game)
-        news_flash('dealer_hitting')
-        break news_flash('dealer_busting') if busted?(:dealer, game)
-      end
-    end
-
-    # evaluation
-    set_winner(game, determine_winner(game))
-    update_scores(scores, game)
-    news_flash('revealing')
-    display_hands(game, :full)
-    display_winner(game)
-    display_scores(scores)
-
-    break display_overall_winner(scores) if overall_winner?(scores)
-    wait_for_user
-  end
-
-  break prompt('bye') unless user_wants_to_play_again?
-end
+start
