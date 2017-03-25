@@ -145,7 +145,7 @@ def user_wants_to_play_again?
   end
 end
 
-# INTERNAL GAME MECHANICS
+# GAME MECHANICS
 
 def initialize_game
   game = {
