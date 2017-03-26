@@ -41,9 +41,6 @@ def start(seed)
     4.times { puts }
     sleep 0.2
     tick!(grid)
-    system 'clear'
-    display(grid)
-    4.times { puts }
     break if dead?(grid)
   end
 end
