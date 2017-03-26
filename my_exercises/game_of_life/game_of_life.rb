@@ -13,42 +13,53 @@ def create_empty_grid(size)
   grid
 end
 
-def my_population # this is a 13 x 13 grid
+def my_population # here: a 13 x 13 grid
   [
-
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, true, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, true, false, false, false, false, false, false, false, false, false],
-    [false, true, true, true, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false, false, false, false, false]
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, true, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, true, false, false, false,
+      false, false, false, false, false, false],
+    [false, true, true, true, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false],
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false]
   ]
 end
 
 def neighbours(row, col, grid)
   if row == grid.size - 1
-    rowplusone = 0
+    rowplus1 = 0
   else
-    rowplusone = row + 1
+    rowplus1 = row + 1
   end
 
   if col == grid.size - 1
-    colplusone = 0
+    colplus1 = 0
   else
-    colplusone = col + 1
+    colplus1 = col + 1
   end
 
-  [
-    grid[row - 1][col - 1],    grid[row - 1][col],    grid[row - 1][colplusone],
-    grid[row][col-1],                                 grid[row][colplusone],
-    grid[rowplusone][col - 1], grid[rowplusone][col], grid[rowplusone][colplusone]
+  [grid[row - 1][col - 1], grid[row - 1][col], grid[row - 1][colplus1],
+    grid[row][col-1], grid[row][colplus1],
+    grid[rowplus1][col - 1], grid[rowplus1][col], grid[rowplus1][colplus1]
   ]
 end
 
@@ -107,22 +118,6 @@ def display(grid)
         display_grid[row_index][col_index] = "\u25FD".encode('utf-8')
       else
         display_grid[row_index][col_index] = "\u25FE".encode('utf-8')
-      end
-    end
-  end
-  display_strings = []
-  display_grid.each { |row| display_strings << row.join }
-  puts display_strings
-end
-
-def display_with_alive_neighbours(grid)
-  display_grid = create_empty_grid(grid.size)
-  grid.each_with_index do |row, row_index|
-    row.each_with_index do |cell, col_index|
-      if alive?(cell)
-        display_grid[row_index][col_index] = "\u25FD".encode('utf-8') + "#{count_alive(neighbours(row_index, col_index, grid))}"
-      else
-        display_grid[row_index][col_index] = "\u25FE".encode('utf-8') + "#{count_alive(neighbours(row_index, col_index, grid))}"
       end
     end
   end
