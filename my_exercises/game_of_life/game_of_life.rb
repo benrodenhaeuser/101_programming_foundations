@@ -50,14 +50,14 @@ end
 
 # representing the grid
 
-def create_empty_grid(size)
+def create_empty_square_grid(size)
   grid = Array.new
   size.times do
     grid << []
   end
   grid.each do |row|
     size.times do
-      row << false
+      row << nil
     end
   end
   grid
@@ -94,11 +94,11 @@ end
 
 def tick!(grid)
   next_grid = build_next_grid(grid)
-  overwrite!(grid, next_grid)
+  overwrite_values!(grid, next_grid)
 end
 
 def build_next_grid(grid)
-  next_grid = create_empty_grid(grid.size)
+  next_grid = create_empty_square_grid(grid.size)
 
   grid.each_with_index do |row, row_index|
     row.each_with_index do |cell, col_index|
@@ -116,7 +116,7 @@ def build_next_grid(grid)
   next_grid
 end
 
-def overwrite!(grid, next_grid)
+def overwrite_values!(grid, next_grid)
   grid.each_with_index do |row, row_index|
     row.each_index do |col_index|
       grid[row_index][col_index] = next_grid[row_index][col_index]
@@ -127,7 +127,7 @@ end
 # grid display
 
 def display(grid)
-  display_grid = create_empty_grid(grid.size)
+  display_grid = create_empty_square_grid(grid.size)
 
   grid.each_with_index do |row, row_index|
     row.each_with_index do |cell, col_index|
