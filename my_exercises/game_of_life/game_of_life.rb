@@ -1,51 +1,20 @@
-# seed grid
+# game of life
 
 GLIDER =
   [
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, true, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, true, false, false, false,
-     false, false, false, false, false, false],
-    [false, true, true, true, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false],
-    [false, false, false, false, false, false, false,
-     false, false, false, false, false, false]
+    [false, true, false, false],
+    [false, false, true, false],
+    [true, true, true, false],
+    [false, false, false, false]
   ]
 
-# game of life loop
+SIZE = 16
 
-def start(seed)
-  grid = seed
-
-  loop do
-    system 'clear'
-    display(grid)
-    4.times { puts }
-    sleep 0.2
-    tick!(grid)
-    break if dead?(grid)
-  end
+def start(seed, size)
+  grid = create_empty_square_grid(size)
+  embed!(seed, grid)
+  game_of_life(grid)
 end
-
-# representing the grid
 
 def create_empty_square_grid(size)
   grid = Array.new
@@ -54,16 +23,37 @@ def create_empty_square_grid(size)
   end
   grid.each do |row|
     size.times do
-      row << nil
+      row << false
     end
   end
   grid
 end
 
+def embed!(seed, grid)
+  top_left = grid.size / 2 - seed.size / 2
+  (top_left...seed.size + top_left).each do |row_index|
+    (top_left...seed.size + top_left).each do |col_index|
+      grid[row_index][col_index] =
+        seed[row_index - top_left][col_index - top_left]
+    end
+  end
+end
+
+def game_of_life(grid)
+  loop do
+    system 'clear'
+    display(grid)
+    4.times { puts }
+    sleep 0.2
+    break if dead?(grid)
+    tick!(grid)
+  end
+end
+
 # rubocop: disable Metrics/AbcSize
 def neighbours(row, col, grid)
-  rowplus1 = if row == grid.size - 1 then 0 else row + 1 end
-  colplus1 = if col == grid.size - 1 then 0 else col + 1 end
+  rowplus1 = (if row == grid.size - 1 then 0 else row + 1 end)
+  colplus1 = (if col == grid.size - 1 then 0 else col + 1 end)
 
   [grid[row - 1][col - 1], grid[row - 1][col], grid[row - 1][colplus1],
    grid[row][col - 1], grid[row][colplus1],
@@ -87,8 +77,6 @@ def dead?(grid)
   end
 end
 
-# grid transitions
-
 def tick!(grid)
   next_grid = build_next_grid(grid)
   overwrite_values!(grid, next_grid)
@@ -102,7 +90,7 @@ def build_next_grid(grid)
       alive_neighbours = count_alive(neighbours(row_index, col_index, grid))
 
       next_grid[row_index][col_index] =
-        if alive?(cell) && alive_neighbours == 2 || alive_neighbours == 3
+        if (alive?(cell) && alive_neighbours == 2) || alive_neighbours == 3
           true
         else
           false
@@ -120,8 +108,6 @@ def overwrite_values!(grid, next_grid)
     end
   end
 end
-
-# grid display
 
 def display(grid)
   display_grid = create_empty_square_grid(grid.size)
@@ -141,6 +127,4 @@ def display(grid)
   puts display_strings
 end
 
-# kick off game of life
-
-start(GLIDER)
+start(GLIDER, SIZE)
