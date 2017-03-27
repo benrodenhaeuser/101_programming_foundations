@@ -1,14 +1,37 @@
 # GAME OF LIFE
 
-# configuration
+# seeds
+GLIDER = [
+  [false, true, false],
+  [false, false, true],
+  [true, true, true]
+]
 
-GLIDER_SEED = [[false, true, false], [false, false, true], [true, true, true]]
+SMALL_EXPLODER = [
+  [false, true, false],
+  [true, true, true],
+  [true, false, true],
+  [false, true, false]
+]
+
+TEN_CELL_ROW = [
+  [true, true, true, true, true, true, true, true, true, true]
+]
+
+EXPLODER = [
+  [true, false, true, false, true],
+  [true, false, false, false, true],
+  [true, false, false, false, true],
+  [true, false, false, false, true],
+  [true, false, true, false, true]
+]
+
+# grid config
 GRID_SIZE = 30
 ALIVE_DISPLAY = "\u25FD".encode('utf-8')
 DEAD_DISPLAY = "\u25FE".encode('utf-8')
 
 # game of life
-
 def start(seed, size)
   grid = create_empty_square_grid(size)
   embed(seed, grid)
@@ -29,11 +52,12 @@ def create_empty_square_grid(size)
 end
 
 def embed(seed, grid)
-  top_left = grid.size / 2 - seed.size / 2
-  (top_left...seed.size + top_left).each do |row_index|
-    (top_left...seed.size + top_left).each do |col_index|
+  top = grid.size / 2 - seed.size / 2
+  left = grid.size / 2 - seed.first.size / 2
+  (top...seed.size + top).each do |row_index|
+    (left...seed.first.size + left).each do |col_index|
       grid[row_index][col_index] =
-        seed[row_index - top_left][col_index - top_left]
+        seed[row_index - top][col_index - left]
     end
   end
 end
@@ -44,7 +68,7 @@ def game_of_life(grid)
     display(grid)
     4.times { puts }
     sleep 0.2
-    break if dead?(grid)
+    break if stable?(grid)
     tick(grid)
   end
 end
@@ -67,12 +91,8 @@ def display(grid)
   puts display_strings
 end
 
-def dead?(grid)
-  grid.all? do |row|
-    row.all? do |cell|
-      !alive?(cell)
-    end
-  end
+def stable?(grid)
+  grid == build_next_grid(grid)
 end
 
 def tick(grid)
@@ -126,6 +146,5 @@ def overwrite_values(grid, next_grid)
   end
 end
 
-# kick it off ...
-
-start(GLIDER_SEED, GRID_SIZE)
+#
+start(SMALL_EXPLODER, GRID_SIZE)
