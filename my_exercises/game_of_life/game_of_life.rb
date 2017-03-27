@@ -1,6 +1,6 @@
 # GAME OF LIFE
 
-# seeds
+# examples of seeds (source: https://bitstorm.org/gameoflife/)
 GLIDER = [
   [false, true, false],
   [false, false, true],
@@ -12,6 +12,10 @@ SMALL_EXPLODER = [
   [true, true, true],
   [true, false, true],
   [false, true, false]
+]
+
+FIVE_CELL_ROW = [
+  [true, true, true, true, true]
 ]
 
 TEN_CELL_ROW = [
@@ -40,24 +44,30 @@ end
 
 def create_empty_square_grid(size)
   grid = Array.new
+
   size.times do
     grid << []
   end
+
   grid.each do |row|
     size.times do
       row << false
     end
   end
+
   grid
 end
 
 def embed(seed, grid)
-  top = grid.size / 2 - seed.size / 2
-  left = grid.size / 2 - seed.first.size / 2
-  (top...seed.size + top).each do |row_index|
-    (left...seed.first.size + left).each do |col_index|
-      grid[row_index][col_index] =
-        seed[row_index - top][col_index - left]
+  seed_height = seed.size
+  seed_width = seed.first.size
+  top_margin = (grid.size - seed_height) / 2
+  left_margin = (grid.size - seed_width) / 2
+
+  (0...seed_height).each do |row_index|
+    (0...seed_width).each do |col_index|
+      grid[row_index + top_margin][col_index + left_margin] =
+        seed[row_index][col_index]
     end
   end
 end
@@ -65,10 +75,13 @@ end
 def game_of_life(grid)
   loop do
     system 'clear'
+
     display(grid)
+
     4.times { puts }
     sleep 0.2
     break if stable?(grid)
+
     tick(grid)
   end
 end
@@ -104,11 +117,13 @@ def build_next_grid(grid)
   next_grid = create_empty_square_grid(grid.size)
 
   grid.each_with_index do |row, row_index|
-    row.each_with_index do |cell, col_index|
+    row.each_index do |col_index|
       alive_neighbours = count_alive(neighbours(row_index, col_index, grid))
 
       next_grid[row_index][col_index] =
-        if (alive?(cell) && alive_neighbours == 2) || alive_neighbours == 3
+        if alive_neighbours == 2
+          grid[row_index][col_index]
+        elsif alive_neighbours == 3
           true
         else
           false
@@ -119,16 +134,28 @@ def build_next_grid(grid)
   next_grid
 end
 
-# rubocop: disable Metrics/AbcSize
 def neighbours(row, col, grid)
-  rowplus1 = (if row == grid.size - 1 then 0 else row + 1 end)
-  colplus1 = (if col == grid.size - 1 then 0 else col + 1 end)
+  above        = row - 1
+  below        = plus_one(row, grid.size - 1)
+  to_the_left  = col - 1
+  to_the_right = plus_one(col, grid.size - 1)
 
-  [grid[row - 1][col - 1], grid[row - 1][col], grid[row - 1][colplus1],
-   grid[row][col - 1], grid[row][colplus1],
-   grid[rowplus1][col - 1], grid[rowplus1][col], grid[rowplus1][colplus1]]
+  row_above    = grid[above]
+  current_row  = grid[row]
+  row_below    = grid[below]
+
+  [row_above[to_the_left], row_above[col], row_above[to_the_right],
+   current_row[to_the_left], current_row[to_the_right],
+   row_below[to_the_left], row_below[col], row_below[to_the_right]]
 end
-# rubocop: enable Metrics/AbcSize
+
+def plus_one(x, last)
+  if x == last
+    0
+  else
+    x + 1
+  end
+end
 
 def count_alive(cells)
   cells.count { |cell| alive?(cell) }
@@ -147,4 +174,4 @@ def overwrite_values(grid, next_grid)
 end
 
 #
-start(SMALL_EXPLODER, GRID_SIZE)
+start(GLIDER, GRID_SIZE)
