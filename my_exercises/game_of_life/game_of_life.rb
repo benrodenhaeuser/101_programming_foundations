@@ -31,7 +31,7 @@ EXPLODER = [
 ]
 
 # grid config
-GRID_SIZE = 30
+GRID_SIZE = 12
 ALIVE_DISPLAY = "\u25FD".encode('utf-8')
 DEAD_DISPLAY = "\u25FE".encode('utf-8')
 
@@ -43,7 +43,7 @@ def start(seed, size)
 end
 
 def create_empty_square_grid(size)
-  grid = Array.new
+  grid = []
 
   size.times do
     grid << []
@@ -134,26 +134,49 @@ def build_next_grid(grid)
   next_grid
 end
 
-def neighbours(row, col, grid)
-  above        = row - 1
-  below        = plus_one(row, grid.size - 1)
-  to_the_left  = col - 1
-  to_the_right = plus_one(col, grid.size - 1)
-
-  row_above    = grid[above]
-  current_row  = grid[row]
-  row_below    = grid[below]
-
-  [row_above[to_the_left], row_above[col], row_above[to_the_right],
-   current_row[to_the_left], current_row[to_the_right],
-   row_below[to_the_left], row_below[col], row_below[to_the_right]]
+def neighbours(row_index, col_index, grid)
+  neighbours_above(row_index, col_index, grid) +
+    neighbours_current_height(row_index, col_index, grid) +
+    neighbours_below(row_index, col_index, grid)
 end
 
-def plus_one(x, last)
-  if x == last
+def neighbours_above(row_index, col_index, grid)
+  row_above = grid[row_index - 1]
+  to_the_left = col_index - 1
+  to_the_right = plus_one(col_index, grid.size)
+  [
+    row_above[to_the_left],
+    row_above[col_index],
+    row_above[to_the_right]
+  ]
+end
+
+def neighbours_current_height(row_index, col_index, grid)
+  current_row = grid[row_index]
+  to_the_left = col_index - 1
+  to_the_right = plus_one(col_index, grid.size)
+  [
+    current_row[to_the_left],
+    current_row[to_the_right]
+  ]
+end
+
+def neighbours_below(row_index, col_index, grid)
+  row_below = grid[plus_one(row_index, grid.size)]
+  to_the_left = col_index - 1
+  to_the_right = plus_one(col_index, grid.size)
+  [
+    row_below[to_the_left],
+    row_below[col_index],
+    row_below[to_the_right]
+  ]
+end
+
+def plus_one(index, grid_size)
+  if index == grid_size - 1
     0
   else
-    x + 1
+    index + 1
   end
 end
 
