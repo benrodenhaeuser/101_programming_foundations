@@ -1,3 +1,7 @@
+# given an array of words, built a two-dimensional array containing groups
+# of words that are anagrams of each other (excluding words that have no
+# anagrams in the original array)
+
 def anagrams(words)
   anagrams = Hash.new { |key, value| key[value] = [] }
   words.each { |word| anagrams[word.chars.sort.join] << word }

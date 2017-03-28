@@ -1,3 +1,5 @@
+# given a string, find all permutations of the string
+
 def all_permutations(string)
   produce_all_permutations(string).sort
 end
@@ -33,5 +35,6 @@ p all_permutations('abcdef').size == (1..6).reduce(1, :*) # true
 p all_permutations('abcdefghi').size == (1..9).reduce(1, :*) # true
 
 # ^ (1..n).reduce(1, :*) computes the factorial of 6
-
-# for strings of size >= 9, all_permutations is too slow to be useable.
+# the number of permutations of a string is factorial(string.size)
+# so this function grows fast
+# for strings of size >= 9, all_permutations above is too slow to be useable.
