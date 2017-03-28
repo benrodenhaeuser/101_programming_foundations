@@ -78,7 +78,7 @@ def game_of_life(grid)
 
     display(grid)
 
-    4.times { puts }
+    2.times { puts }
     sleep 0.2
     break if stable?(grid)
 
