@@ -8,7 +8,6 @@ reversed = arr.sort { |a, b| arr.index(b) <=> arr.index(a) }
 # using `sort_by`:
 reversed = arr.sort_by { |elem| -arr.index(elem) }
 
-
 # note the difference between reversing and sorting in descending order
 
 arr = [0, 1, 3, 2, 4]
