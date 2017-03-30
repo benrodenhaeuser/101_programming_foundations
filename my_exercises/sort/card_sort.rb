@@ -5,6 +5,8 @@
 # - move cards from you right hand to your left hand, preserving the property
 #   that the cards in your right hand are sorted (our loop invariant)
 
+# ... pretty complicated!
+
 # sort given array
 def sort(array)
   sorted = []
