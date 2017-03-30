@@ -18,7 +18,7 @@ words =  ['demo', 'none', 'tied', 'evil', 'dome', 'mode', 'live',
 # here is how one could do it:
 
 def anagrams(array_of_words)
-  ana_hash = Hash.new { |key, value| key[value] = [] }
+  ana_hash = Hash.new { |hash, key| hash[key] = [] }
   array_of_words.each { |word| ana_hash[word.split("").sort.join] << word }
   ana_hash.map { |key, list| list }.select { |list| list.size > 1 }
 end

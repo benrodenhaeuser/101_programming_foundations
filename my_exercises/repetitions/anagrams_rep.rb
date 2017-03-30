@@ -1,5 +1,5 @@
 def anagrams(words)
-  anagrams = Hash.new { |key, value| key[value] = [] }
+  anagrams = Hash.new { |hash, key| hash[key] = [] }
   words.each { |word| anagrams[word.chars.sort.join] << word }
   anagrams.map { |_, list| list }.select { |list| list.size > 1 }
 end
