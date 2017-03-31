@@ -10,17 +10,22 @@ string/string
 
 (output is substring of input)
 
+Analysis:
+This problem does not necessarily have a unique solution.
+What if there a several maximal palindromes that have the same length?
+On first pass, we will simply look to return an arbitrary one.
+
 Algo:
 
 - if string is a palindrome, return string
 - else:
-    recursively look for longest palindrome in
+    recursively find longest palindrome in
     (string without first char) and (string without last char)
 
 Pseudocode:
 
 def palindrome(string)
-  if reverse(string) is the same as string
+  if reverse(string) == string
     return string
   else
     if palindrome(string without first character) is longer than
@@ -31,37 +36,80 @@ def palindrome(string)
     end
 end
 
-=end
+Implementation:
 
 def palindrome(string)
-    if string.reverse == string && string.size > 1
-        string
-    else
-        string_without_first = string.slice(1..string.size - 1)
-        string_without_last = string.slice(0..string.size - 2)
+  if string.reverse == string
+    string
+  else
+    right_string = string.slice(1..string.size - 1)
+    left_string = string.slice(0..string.size - 2)
 
-        if palindrome(string_without_first).size >
-            palindrome(string_without_last).size
-            palindrome(string_without_first)
-        else
-            palindrome(string_without_last)
-        end
+    palin_right_string = palindrome(right_string)
+    palin_left_string = palindrome(left_string)
+
+    if palin_right_string.size > palin_left_string.size
+      palin_right_string
+    else
+      palin_left_string
     end
+  end
 end
 
-p palindrome("anna")
-p palindrome("brightannaruby")
-p palindrome("ff abcdefedcba more")
 
-# Jerome's solution:
-# def palindromic?(str)
-#    str == str.reverse
-# end
-#
-# def slices(str)
-#  (returns all substrings of str)
-# end
-#
-# def longest_palindrome(str)
-#  (iterate over slices(str) and find longest string with palindromic?(str) )
-# end
+Now returning to the original problem: What if we wanted to return
+all maximal palindromic substrings, rather than one arbitrary one of them?
+
+To do this, we need to maintain a *list* of palindromes.
+
+Algo:
+
+if given string is palindrome,
+then palindromes(string) is the list [string]
+
+else
+ distinguish left_string (drop first element from string)
+ and right_string (drop last element)
+
+ if elements contained in palindromes(left_string) are longer than the ones
+ in palindromes(right_string):
+
+ palindromes(string) is palindromes(left_string)
+
+ if the ones in palindromes(right_string) are longer:
+
+ palindromes(string) is palindromes(right_string)
+
+ else:
+ palindromes(string) is concatenation of palindromes(left_string) and
+ palindromes(right_string)
+
+ since our list might contain duplicates, we throw them out at the end of
+ each call to palindromes method
+
+=end
+
+
+def palindromes(string)
+  if string.reverse == string
+    palindromes = [string]
+  else
+    right_string = string.slice(1..string.size - 1)
+    left_string = string.slice(0..string.size - 2)
+
+    palins_right = palindromes(right_string)
+    palins_left = palindromes(left_string)
+
+    if palins_right.first.size > palins_left.first.size
+      palindromes = palins_right
+    elsif palins_right.first.size < palins_left.first.size
+      palindromes = palines_left
+    else
+      palindromes = palins_left + palins_right
+    end
+  end
+
+  palindromes.uniq
+end
+
+p palindromes("annabrznnzghynny") # ["anna", "znnz", "ynny"]
