@@ -56,9 +56,8 @@ def palindrome(string)
   end
 end
 
-
-Now returning to the original problem: What if we wanted to return
-all maximal palindromic substrings, rather than one arbitrary one of them?
+Now returning to the initial problem: What if we wanted to return
+all maximal palindromic substrings, rather than a single arbitrary one of them?
 
 To do this, we need to maintain a *list* of palindromes.
 
@@ -68,24 +67,27 @@ if given string is palindrome,
 then palindromes(string) is the list [string]
 
 else
- distinguish left_string (drop first element from string)
- and right_string (drop last element)
+ left_string = drop first element from string
+ right_string = drop last element from string
 
  if elements contained in palindromes(left_string) are longer than the ones
  in palindromes(right_string):
-
- palindromes(string) is palindromes(left_string)
+    palindromes(string) is palindromes(left_string)
 
  if the ones in palindromes(right_string) are longer:
-
- palindromes(string) is palindromes(right_string)
+    palindromes(string) is palindromes(right_string)
 
  else:
- palindromes(string) is concatenation of palindromes(left_string) and
- palindromes(right_string)
+    palindromes(string) is concatenation of palindromes(left_string) and
+    palindromes(right_string)
 
- since our list might contain duplicates, we throw them out at the end of
- each call to palindromes method
+ since list of palindromes might contain duplicates:
+ throw them out before returning list of palindromes
+
+
+ NOTE:
+ this algorithm is quite inefficient, because it is not excluded that it
+ will visit substrings many times. but it's simple! 
 
 =end
 
