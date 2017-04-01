@@ -87,10 +87,9 @@ else
 
  NOTE:
  this algorithm is quite inefficient, because it is not excluded that it
- will visit substrings many times. but it's simple! 
+ will visit substrings many times. but it's simple!
 
 =end
-
 
 def palindromes(string)
   if string.reverse == string
