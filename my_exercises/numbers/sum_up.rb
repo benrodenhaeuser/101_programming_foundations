@@ -8,37 +8,28 @@ def sum(n)
   sum
 end
 
-def product(n)
-  product = 1
-  for i in (1..n)
-    product = product * i
-  end
-  product
-end
-
 def sum2(n)
   sum = 0
   (1..n).each { |number| sum += number }
   sum
 end
 
-def product2(n)
-  product = 1
-  (1..n).each { |number| product *= number }
-  product
-end
-
 def sum3(n)
-  (1..n).inject(&:+)
+  (1..n).inject(0, :+)
 end
 
-def product3(n)
-  (1..n).inject(&:*)
+def Gauss_sum(n)
+  (n * (n + 1)) / 2
 end
 
-p sum(5) # 15
-p sum2(5)
-p sum3(5)
-p product(5) # 120
-p product2(5)
-p product3(5)
+
+def check(number)
+p sum(number) == sum2(number)
+p sum2(number) == sum3(number)
+p sum3(number) == Gauss_sum(number)
+end
+
+check(0)
+check(1)
+check(10)
+check(50)

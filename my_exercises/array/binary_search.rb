@@ -1,5 +1,3 @@
-# with help from "A Common-Sense Guide to Data Structures and Algorithms"
-
 def binary_search(number, order)
   lower_bound = 0
   upper_bound = order.size - 1
